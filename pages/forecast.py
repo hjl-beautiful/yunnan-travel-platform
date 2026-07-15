@@ -1,9 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from pyecharts.charts import Line
-from pyecharts import options as opts
-from streamlit_echarts import st_pyecharts
+import matplotlib.pyplot as plt
 import sys
 import os
 
@@ -33,35 +31,28 @@ st.markdown("#### 历史数据与预测对比")
 
 selected_spots = city_spots.head(3)["name"].tolist()
 
-line = Line()
-line.add_xaxis(months)
-
+fig, ax = plt.subplots(figsize=(14, 5))
 colors = ["#667eea", "#764ba2", "#f093fb"]
+
 for idx, spot_name in enumerate(selected_spots):
     base = city_spots[city_spots["name"] == spot_name]["annual_visitors"].values[0] / 12
     historical = [base * (0.6 + np.random.random() * 0.8) for _ in range(12)]
     forecast = [base * (0.7 + np.random.random() * 0.6) for _ in range(3)]
     full_data = historical + forecast
 
-    line.add_yaxis(
-        spot_name,
-        [round(x, 1) for x in full_data],
-        is_smooth=True,
-        symbol="circle",
-        symbol_size=6,
-        linestyle_opts=opts.LineStyleOpts(width=2.5, color=colors[idx]),
-        itemstyle_opts=opts.ItemStyleOpts(color=colors[idx]),
-    )
+    ax.plot(months, full_data, marker='o', linewidth=2, color=colors[idx], 
+            markersize=5, label=spot_name)
 
-line.set_global_opts(
-    title_opts=opts.TitleOpts(title=f"{selected_city}热门景点游客量预测"),
-    xaxis_opts=opts.AxisOpts(name="月份"),
-    yaxis_opts=opts.AxisOpts(name="游客量(万人次)"),
-    tooltip_opts=opts.TooltipOpts(trigger="axis"),
-    legend_opts=opts.LegendOpts(pos_top="30"),
-)
-
-st_pyecharts(line, height="480px")
+ax.set_title(f'{selected_city}热门景点游客量预测', fontsize=14, fontweight='bold', pad=20)
+ax.set_xlabel('月份', fontsize=12)
+ax.set_ylabel('游客量(万人次)', fontsize=12)
+ax.legend(loc='upper right', fontsize=10)
+ax.grid(True, alpha=0.3)
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+plt.xticks(rotation=45)
+plt.tight_layout()
+st.pyplot(fig)
 
 st.markdown("---")
 st.markdown("### 预测说明")

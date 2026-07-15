@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
-from pyecharts.charts import Bar, Pie, Line
+import matplotlib.pyplot as plt
+from pyecharts.charts import Bar, Pie
 from pyecharts import options as opts
 from streamlit_echarts import st_pyecharts
 import sys
@@ -84,25 +85,14 @@ st.markdown("### 游客量趋势（模拟月度数据）")
 months = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"]
 visitor_trend = [45, 52, 68, 85, 95, 78, 120, 135, 90, 110, 75, 55]
 
-line = (
-    Line()
-    .add_xaxis(months)
-    .add_yaxis(
-        "游客量(万)",
-        visitor_trend,
-        is_smooth=True,
-        symbol="circle",
-        symbol_size=8,
-        linestyle_opts=opts.LineStyleOpts(width=3, color="#667eea"),
-        itemstyle_opts=opts.ItemStyleOpts(color="#667eea"),
-        area_style_opts=opts.AreaStyleOpts(opacity=0.3, color="#667eea"),
-    )
-    .set_global_opts(
-        title_opts=opts.TitleOpts(title="2024年云南旅游月度游客量趋势"),
-        xaxis_opts=opts.AxisOpts(name="月份"),
-        yaxis_opts=opts.AxisOpts(name="游客量(万人次)"),
-        tooltip_opts=opts.TooltipOpts(trigger="axis"),
-        legend_opts=opts.LegendOpts(pos_top="30"),
-    )
-)
-st_pyecharts(line, height="450px")
+fig, ax = plt.subplots(figsize=(12, 5))
+ax.plot(months, visitor_trend, marker='o', linewidth=2.5, color='#667eea', markersize=8)
+ax.fill_between(months, visitor_trend, alpha=0.3, color='#667eea')
+ax.set_title('2024年云南旅游月度游客量趋势', fontsize=14, fontweight='bold', pad=20)
+ax.set_xlabel('月份', fontsize=12)
+ax.set_ylabel('游客量(万人次)', fontsize=12)
+ax.grid(True, alpha=0.3)
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+plt.tight_layout()
+st.pyplot(fig)
