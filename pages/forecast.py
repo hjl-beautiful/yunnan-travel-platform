@@ -54,12 +54,11 @@ for idx, spot_name in enumerate(selected_spots):
     )
 
 line.set_global_opts(
-    title_opts=opts.TitleOpts(title=f"{selected_city}热门景点游客量预测", pos_top="3%"),
+    title_opts=opts.TitleOpts(title=f"{selected_city}热门景点游客量预测"),
     xaxis_opts=opts.AxisOpts(name="月份"),
     yaxis_opts=opts.AxisOpts(name="游客量(万人次)"),
     tooltip_opts=opts.TooltipOpts(trigger="axis"),
-    legend_opts=opts.LegendOpts(pos_top="10%"),
-    grid_opts=opts.GridOpts(pos_top="18%", pos_bottom="8%"),
+    legend_opts=opts.LegendOpts(pos_top="30"),
 )
 
 st_pyecharts(line, height="480px")
