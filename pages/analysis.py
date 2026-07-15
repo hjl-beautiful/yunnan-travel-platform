@@ -40,13 +40,28 @@ col1, col2 = st.columns(2)
 with col1:
     st.markdown("### 景点类型分布")
     type_counts = df.groupby("type").size().reset_index(name="count")
+    type_data = [list(z) for z in zip(type_counts["type"].tolist(), type_counts["count"].tolist())]
+
     pie = (
         Pie()
-        .add("", [list(z) for z in zip(type_counts["type"].tolist(), type_counts["count"].tolist())])
-        .set_global_opts(title_opts=opts.TitleOpts(title="类型占比"))
-        .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c}"))
+        .add("", type_data, radius=["40%", "70%"])
+        .set_global_opts(
+            title_opts=opts.TitleOpts(title="类型占比", pos_left="center"),
+            legend_opts=opts.LegendOpts(
+                type_="scroll",
+                orient="vertical",
+                pos_left="left",
+                pos_top="middle",
+                item_width=10,
+                item_height=10,
+            ),
+        )
+        .set_series_opts(
+            label_opts=opts.LabelOpts(formatter="{b}: {c} ({d}%)", font_size=11),
+            tooltip_opts=opts.TooltipOpts(trigger="item", formatter="{b}: {c} ({d}%)"),
+        )
     )
-    st_pyecharts(pie, height="350px")
+    st_pyecharts(pie, height="400px")
 
 with col2:
     st.markdown("### 评分分布")
@@ -62,7 +77,7 @@ with col2:
             yaxis_opts=opts.AxisOpts(name="数量"),
         )
     )
-    st_pyecharts(bar2, height="350px")
+    st_pyecharts(bar2, height="400px")
 
 st.markdown("---")
 st.markdown("### 游客量趋势（模拟月度数据）")
@@ -84,10 +99,12 @@ line = (
         area_style_opts=opts.AreaStyleOpts(opacity=0.3, color="#667eea"),
     )
     .set_global_opts(
-        title_opts=opts.TitleOpts(title="2024年云南旅游月度游客量趋势"),
+        title_opts=opts.TitleOpts(title="2024年云南旅游月度游客量趋势", pos_top="5%"),
         xaxis_opts=opts.AxisOpts(name="月份"),
         yaxis_opts=opts.AxisOpts(name="游客量(万人次)"),
         tooltip_opts=opts.TooltipOpts(trigger="axis"),
+        legend_opts=opts.LegendOpts(pos_top="12%"),
+        grid_opts=opts.GridOpts(pos_top="20%", pos_bottom="10%"),
     )
 )
-st_pyecharts(line, height="400px")
+st_pyecharts(line, height="450px")
