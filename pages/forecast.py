@@ -31,6 +31,9 @@ st.markdown("#### 历史数据与预测对比")
 
 selected_spots = city_spots.head(3)["name"].tolist()
 
+plt.rcParams['font.sans-serif'] = ['SimHei', 'DejaVu Sans']
+plt.rcParams['axes.unicode_minus'] = False
+
 fig, ax = plt.subplots(figsize=(14, 5))
 colors = ["#667eea", "#764ba2", "#f093fb"]
 

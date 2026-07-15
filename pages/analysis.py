@@ -85,6 +85,9 @@ st.markdown("### 游客量趋势（模拟月度数据）")
 months = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"]
 visitor_trend = [45, 52, 68, 85, 95, 78, 120, 135, 90, 110, 75, 55]
 
+plt.rcParams['font.sans-serif'] = ['SimHei', 'DejaVu Sans']
+plt.rcParams['axes.unicode_minus'] = False
+
 fig, ax = plt.subplots(figsize=(12, 5))
 ax.plot(months, visitor_trend, marker='o', linewidth=2.5, color='#667eea', markersize=8)
 ax.fill_between(months, visitor_trend, alpha=0.3, color='#667eea')
