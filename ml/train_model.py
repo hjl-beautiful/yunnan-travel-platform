@@ -240,7 +240,7 @@ print(f"\n{results_df.to_string()}")
 
 # 目标对比
 print(f"\n{'=' * 60}")
-print(f"📊 关键指标")
+print(f" 关键指标")
 print(f"{'=' * 60}")
 print(f"  R² 决定系数: {r2_best:.4f} (越接近1越好)")
 print(f"  MAE 平均绝对误差: {mae_best:,.0f} 人次")

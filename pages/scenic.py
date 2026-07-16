@@ -12,7 +12,7 @@ from datetime import datetime
 from scipy import stats
 import os
 
-st.set_page_config(page_title="数据洞察", page_icon="🔬", layout="wide")
+st.set_page_config(page_title="数据洞察", layout="wide")
 
 # ========== CSS ==========
 st.markdown("""
@@ -73,14 +73,14 @@ df = data["daily"]
 df_feat = data["features"]
 
 if df is None:
-    st.error("❌ 未找到数据文件")
+    st.error(" 未找到数据文件")
     st.stop()
 
 # ========== 标题 ==========
 st.markdown("""
 <div style="margin-bottom:24px;">
     <div style="display:flex; align-items:center; gap:12px;">
-        <div style="font-size:32px;">🔬</div>
+        <div style="font-size:32px;"></div>
         <div>
             <div style="font-size:24px; font-weight:800; color:#f1f5f9;">数据全景洞察</div>
             <div style="font-size:13px; color:#64748b;">九寨沟真实数据 · 特征工程分析 · 数据质量评估 · 探索性分析</div>
@@ -91,7 +91,7 @@ st.markdown("""
 
 # ========== 第一行：数据概览统计 ==========
 st.markdown('<div class="panel-card">', unsafe_allow_html=True)
-st.markdown('<div class="panel-header">📋 数据集概览</div>', unsafe_allow_html=True)
+st.markdown('<div class="panel-header"> 数据集概览</div>', unsafe_allow_html=True)
 
 s1, s2, s3, s4, s5, s6 = st.columns(6)
 
@@ -126,7 +126,7 @@ col_a, col_b = st.columns([3, 2])
 
 with col_a:
     st.markdown('<div class="panel-card">', unsafe_allow_html=True)
-    st.markdown('<div class="panel-header">📊 客流量分布分析</div>', unsafe_allow_html=True)
+    st.markdown('<div class="panel-header"> 客流量分布分析</div>', unsafe_allow_html=True)
     
     fig = make_subplots(rows=1, cols=2, column_widths=[0.4, 0.6],
                          subplot_titles=("", ""))
@@ -191,7 +191,7 @@ with col_a:
 
 with col_b:
     st.markdown('<div class="panel-card">', unsafe_allow_html=True)
-    st.markdown('<div class="panel-header">🏷️ 特征工程总览</div>', unsafe_allow_html=True)
+    st.markdown('<div class="panel-header"> 特征工程总览</div>', unsafe_allow_html=True)
     
     if df_feat is not None:
         feat_cols = df_feat.columns.tolist()
@@ -203,11 +203,11 @@ with col_b:
         diff_feats = [c for c in feat_cols if "diff" in c.lower() or "wow" in c.lower() or "trend" in c.lower()]
         
         categories = [
-            ("⏰ 时间特征", time_feats, "#3b82f6"),
-            ("🎉 节假日特征", holiday_feats, "#f59e0b"),
-            ("⏮️ 滞后特征", lag_feats, "#8b5cf6"),
-            ("📊 滚动统计", roll_feats, "#10b981"),
-            ("📈 差分趋势", diff_feats, "#ec4899"),
+            (" 时间特征", time_feats, "#3b82f6"),
+            (" 节假日特征", holiday_feats, "#f59e0b"),
+            (" 滞后特征", lag_feats, "#8b5cf6"),
+            (" 滚动统计", roll_feats, "#10b981"),
+            (" 差分趋势", diff_feats, "#ec4899"),
         ]
         
         for cat_name, cat_feats, color in categories:
@@ -233,7 +233,7 @@ col_c, col_d = st.columns([1, 1])
 
 with col_c:
     st.markdown('<div class="panel-card">', unsafe_allow_html=True)
-    st.markdown('<div class="panel-header">🎯 Top 15 特征重要性</div>', unsafe_allow_html=True)
+    st.markdown('<div class="panel-header"> Top 15 特征重要性</div>', unsafe_allow_html=True)
     
     if data["feat_imp"] is not None:
         top_feat = data["feat_imp"].head(15)
@@ -277,7 +277,7 @@ with col_c:
 
 with col_d:
     st.markdown('<div class="panel-card">', unsafe_allow_html=True)
-    st.markdown('<div class="panel-header">🏆 模型性能对比</div>', unsafe_allow_html=True)
+    st.markdown('<div class="panel-header"> 模型性能对比</div>', unsafe_allow_html=True)
     
     if data["model_results"] is not None:
         results = data["model_results"]
@@ -320,7 +320,7 @@ with col_d:
         # 模型对比说明
         st.markdown("""
         <div style="margin-top:16px; padding:12px; background:rgba(59,130,246,0.05); border-radius:8px; border:1px solid rgba(59,130,246,0.1);">
-            <div style="font-size:12px; font-weight:700; color:#3b82f6; margin-bottom:4px;">📚 参考文献对比</div>
+            <div style="font-size:12px; font-weight:700; color:#3b82f6; margin-bottom:4px;"> 参考文献对比</div>
             <div style="font-size:11px; color:#94a3b8; line-height:1.6;">
                 Cheng, J. et al. (2026). SD-ConvLSTM-Attn: A Hybrid Deep Learning Model for Scenic Spot Tourist Flow Prediction. 
                 <em>MDPI Sustainability</em>, 18(14), 7099. — <strong style="color:#10b981;">R² = 0.892</strong>
@@ -334,7 +334,7 @@ with col_d:
 
 # ========== 第四行：数据质量 ==========
 st.markdown('<div class="panel-card">', unsafe_allow_html=True)
-st.markdown('<div class="panel-header">✅ 数据质量评估</div>', unsafe_allow_html=True)
+st.markdown('<div class="panel-header"> 数据质量评估</div>', unsafe_allow_html=True)
 
 q1, q2, q3, q4 = st.columns(4)
 
@@ -395,7 +395,7 @@ st.markdown("""
 <div style="margin-top:20px; padding:16px; background:rgba(15,38,66,0.5); border-radius:12px; 
             border:1px solid rgba(100,180,255,0.08);">
     <div style="font-size:12px; font-weight:700; color:#e2e8f0; margin-bottom:8px;">
-        🔧 技术栈
+         技术栈
     </div>
     <div style="font-size:11px; color:#94a3b8; line-height:1.8;">
         <strong style="color:#3b82f6;">XGBoost</strong> 梯度提升模型 · 

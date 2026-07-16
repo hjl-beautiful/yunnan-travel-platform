@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 from scipy import stats
 import os
 
-st.set_page_config(page_title="客流分析", page_icon="📊", layout="wide")
+st.set_page_config(page_title="客流分析", layout="wide")
 
 # ========== 全局 CSS ==========
 st.markdown("""
@@ -69,7 +69,7 @@ df = load_real_data()
 st.markdown("""
 <div style="margin-bottom: 24px;">
     <div style="display: flex; align-items: center; gap: 12px;">
-        <div style="font-size: 32px;">📊</div>
+        <div style="font-size: 32px;"></div>
         <div>
             <div style="font-size: 24px; font-weight: 800; color: #f1f5f9;">多维流量分析</div>
             <div style="font-size: 13px; color: #64748b;">九寨沟景区真实客流数据 · 时间序列多维度拆解 · 模式识别</div>
@@ -79,7 +79,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 if df is None:
-    st.warning("⚠️ 未找到数据文件，请确保 data/jiuzhaigou_daily.csv 存在")
+    st.warning(" 未找到数据文件，请确保 data/jiuzhaigou_daily.csv 存在")
     st.stop()
 
 # ========== 数据预处理 ==========
@@ -101,7 +101,7 @@ total_records = df["visitors"].sum()
 
 # ========== 关键统计数字 ==========
 st.markdown('<div class="panel-card">', unsafe_allow_html=True)
-st.markdown('<div class="panel-header">📋 数据概览</div>', unsafe_allow_html=True)
+st.markdown('<div class="panel-header"> 数据概览</div>', unsafe_allow_html=True)
 
 s1, s2, s3, s4, s5, s6 = st.columns(6)
 stats = [
@@ -128,7 +128,7 @@ st.markdown('</div>', unsafe_allow_html=True)
 st.markdown('<div class="panel-card">', unsafe_allow_html=True)
 filter_col1, filter_col2, filter_col3 = st.columns([2, 2, 1])
 with filter_col1:
-    view_mode = st.selectbox("📐 视图模式", ["最近数据", "年度对比", "月度聚合", "全部趋势"], 
+    view_mode = st.selectbox(" 视图模式", ["最近数据", "年度对比", "月度聚合", "全部趋势"], 
                              label_visibility="collapsed", key="view_mode")
 with filter_col2:
     if view_mode == "年度对比":
@@ -148,7 +148,7 @@ with filter_col3:
 chart_col1, chart_col2 = st.columns([3, 1])
 
 with chart_col1:
-    st.markdown('<div class="panel-header">📈 客流时序分析</div>', unsafe_allow_html=True)
+    st.markdown('<div class="panel-header"> 客流时序分析</div>', unsafe_allow_html=True)
     
     fig = make_subplots(rows=2, cols=1, shared_xaxes=False, vertical_spacing=0.12,
                          row_heights=[0.65, 0.35],
@@ -259,7 +259,7 @@ with chart_col1:
 
 with chart_col2:
     # 右侧统计面板
-    st.markdown('<div class="panel-header">📊 统计摘要</div>', unsafe_allow_html=True)
+    st.markdown('<div class="panel-header"> 统计摘要</div>', unsafe_allow_html=True)
     
     # 计算当前视图统计
     if view_mode != "月度聚合":
@@ -298,7 +298,7 @@ col_a, col_b = st.columns([1, 1])
 
 with col_a:
     st.markdown('<div class="panel-card">', unsafe_allow_html=True)
-    st.markdown('<div class="panel-header">📅 星期分布分析</div>', unsafe_allow_html=True)
+    st.markdown('<div class="panel-header"> 星期分布分析</div>', unsafe_allow_html=True)
     
     weekday_order = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"]
     weekday_stats = df.groupby("weekday_name")["visitors"].agg(["mean", "std", "count"]).reindex(weekday_order)
@@ -331,7 +331,7 @@ with col_a:
 
 with col_b:
     st.markdown('<div class="panel-card">', unsafe_allow_html=True)
-    st.markdown('<div class="panel-header">📆 月度客流模式</div>', unsafe_allow_html=True)
+    st.markdown('<div class="panel-header"> 月度客流模式</div>', unsafe_allow_html=True)
     
     month_names = [f"{m}月" for m in range(1, 13)]
     month_mean = df.groupby("month")["visitors"].mean()
@@ -379,7 +379,7 @@ col_c, col_d = st.columns([2, 1])
 
 with col_c:
     st.markdown('<div class="panel-card">', unsafe_allow_html=True)
-    st.markdown('<div class="panel-header">📈 年度趋势对比</div>', unsafe_allow_html=True)
+    st.markdown('<div class="panel-header"> 年度趋势对比</div>', unsafe_allow_html=True)
     
     yearly = df.groupby("year")["visitors"].agg(["sum", "mean", "max", "min", "count"]).reset_index()
     yearly = yearly[yearly["count"] > 30]  # 过滤不完整年份
@@ -418,7 +418,7 @@ with col_c:
 
 with col_d:
     st.markdown('<div class="panel-card">', unsafe_allow_html=True)
-    st.markdown('<div class="panel-header">💡 分析洞察</div>', unsafe_allow_html=True)
+    st.markdown('<div class="panel-header"> 分析洞察</div>', unsafe_allow_html=True)
     
     insights = []
     
@@ -426,7 +426,7 @@ with col_d:
     wkend_ratio = (weekend_avg / weekday_avg - 1) * 100 if 'weekend_avg' in dir() else 0
     if abs(wkend_ratio) > 5:
         insights.append({
-            "icon": "📊", "title": "周末效应显著",
+            "icon": "", "title": "周末效应显著",
             "text": f"周末客流量较工作日{'高' if wkend_ratio > 0 else '低'}{abs(wkend_ratio):.1f}%，"
                    f"建议周末增配服务人员。",
             "level": "warning"
@@ -435,7 +435,7 @@ with col_d:
     # 季节模式
     if peak_month in [7, 8, 10]:
         insights.append({
-            "icon": "🏖️", "title": f"{peak_month}月为客流峰值",
+            "icon": "", "title": f"{peak_month}月为客流峰值",
             "text": f"旺季月均客流 {df[df['month']==peak_month]['visitors'].mean():,.0f} 人次，"
                    f"建议提前储备物资和人力。",
             "level": "warning"
@@ -445,20 +445,20 @@ with col_d:
     cv = df["visitors"].std() / df["visitors"].mean() * 100
     if cv > 80:
         insights.append({
-            "icon": "📉", "title": "客流波动较大",
+            "icon": "", "title": "客流波动较大",
             "text": f"变异系数 {cv:.1f}%，淡旺季差异明显，需要灵活的资源配置策略。",
             "level": "danger"
         })
     else:
         insights.append({
-            "icon": "✅", "title": "客流相对稳定",
+            "icon": "", "title": "客流相对稳定",
             "text": f"变异系数 {cv:.1f}%，整体运营可预测性较强。",
             "level": "normal"
         })
     
     # 数据覆盖
     insights.append({
-        "icon": "🗂️", "title": "数据覆盖范围",
+        "icon": "", "title": "数据覆盖范围",
         "text": f"共 {total_days} 天数据，覆盖 {earliest_date.strftime('%Y-%m-%d')} "
                f"至 {latest_date.strftime('%Y-%m-%d')}，数据完整性良好。",
         "level": "normal"

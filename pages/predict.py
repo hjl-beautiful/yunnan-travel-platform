@@ -14,7 +14,7 @@ from utils.predictor import (
     generate_historical_trend, is_model_ready
 )
 
-st.set_page_config(page_title="智能预测", page_icon="🔮", layout="wide")
+st.set_page_config(page_title="智能预测", layout="wide")
 
 st.markdown("""
 <style>
@@ -60,7 +60,7 @@ hist_df = generate_historical_trend(90)
 st.markdown("""
 <div style="margin-bottom:24px;">
     <div style="display:flex; align-items:center; gap:12px;">
-        <div style="font-size:32px;">🔮</div>
+        <div style="font-size:32px;"></div>
         <div>
             <div style="font-size:24px; font-weight:800; color:#f1f5f9;">客流智能预测中心</div>
             <div style="font-size:13px; color:#64748b;">
@@ -68,7 +68,7 @@ st.markdown("""
             </div>
         </div>
         <div style="margin-left:auto;">
-            <span class="badge badge-green">{"✅ 模型就绪" if model_ready else "⚠️ 演示模式"}</span>
+            <span class="badge badge-green">{" 模型就绪" if model_ready else " 演示模式"}</span>
         </div>
     </div>
 </div>
@@ -76,7 +76,7 @@ st.markdown("""
 
 # ========== 模型指标卡片 ==========
 st.markdown('<div class="panel-card">', unsafe_allow_html=True)
-st.markdown('<div class="panel-header">🎯 模型性能指标</div>', unsafe_allow_html=True)
+st.markdown('<div class="panel-header"> 模型性能指标</div>', unsafe_allow_html=True)
 
 if metrics:
     m1, m2, m3, m4, m5 = st.columns(5)
@@ -85,7 +85,7 @@ if metrics:
         ("MAE", f"{metrics['mae']:,.0f}", "平均绝对误差", "预测偏差均值", "#10b981"),
         ("RMSE", f"{metrics['rmse']:,.0f}", "均方根误差", "大误差惩罚", "#8b5cf6"),
         ("MAPE", f"{metrics['mape']:.1f}%", "百分比误差", "相对误差比例", "#f59e0b"),
-        ("vs论文", "✅ 超越", "MDPI 2026", "论文 R²=0.892", "#06b6d4"),
+        ("vs论文", " 超越", "MDPI 2026", "论文 R²=0.892", "#06b6d4"),
     ]
     for col, (label, value, title, desc, color) in zip([m1, m2, m3, m4, m5], metric_items):
         with col:
@@ -106,7 +106,7 @@ col_main, col_side = st.columns([7, 3])
 
 with col_main:
     st.markdown('<div class="panel-card">', unsafe_allow_html=True)
-    st.markdown('<div class="panel-header">📈 7日客流预测</div>', unsafe_allow_html=True)
+    st.markdown('<div class="panel-header"> 7日客流预测</div>', unsafe_allow_html=True)
     
     if not hist_df.empty and not forecast_df.empty:
         last_hist_date = hist_df["日期"].iloc[-1]
@@ -184,7 +184,7 @@ with col_main:
 with col_side:
     # 预测明细
     st.markdown('<div class="panel-card">', unsafe_allow_html=True)
-    st.markdown('<div class="panel-header">📅 7日预测明细</div>', unsafe_allow_html=True)
+    st.markdown('<div class="panel-header"> 7日预测明细</div>', unsafe_allow_html=True)
     
     capacity = 41000
     for _, row in forecast_df.iterrows():
@@ -228,7 +228,7 @@ with col_side:
     
     # 特征重要性预览
     st.markdown('<div class="panel-card">', unsafe_allow_html=True)
-    st.markdown('<div class="panel-header">🔑 关键特征</div>', unsafe_allow_html=True)
+    st.markdown('<div class="panel-header"> 关键特征</div>', unsafe_allow_html=True)
     
     feat_df = get_feature_importance(8)
     if not feat_df.empty:
@@ -257,7 +257,7 @@ col_tech, col_ref = st.columns([2, 1])
 with col_tech:
     st.markdown("""
     <div style="padding:20px; background:rgba(15,38,66,0.5); border-radius:12px; border:1px solid rgba(100,180,255,0.08);">
-        <div style="font-size:13px; font-weight:700; color:#e2e8f0; margin-bottom:10px;">🔬 技术架构</div>
+        <div style="font-size:13px; font-weight:700; color:#e2e8f0; margin-bottom:10px;"> 技术架构</div>
         <div style="font-size:11px; color:#94a3b8; line-height:1.8;">
             <strong style="color:#3b82f6;">XGBoost</strong> 梯度提升决策树，基于40维特征进行时序预测。<br>
             特征包括：时间特征(10维)、节假日效应(5维)、滞后特征(4维)、滚动窗口统计(16维)、差分趋势(5维)。<br>
@@ -269,7 +269,7 @@ with col_tech:
 with col_ref:
     st.markdown("""
     <div style="padding:20px; background:rgba(15,38,66,0.5); border-radius:12px; border:1px solid rgba(100,180,255,0.08);">
-        <div style="font-size:13px; font-weight:700; color:#e2e8f0; margin-bottom:10px;">📚 可迁移性</div>
+        <div style="font-size:13px; font-weight:700; color:#e2e8f0; margin-bottom:10px;"> 可迁移性</div>
         <div style="font-size:11px; color:#94a3b8; line-height:1.8;">
             所有特征均为<strong style="color:#06b6d4;">通用维度</strong>（时间、节假日、历史趋势），
             不依赖景区特有属性。<br>

@@ -12,7 +12,6 @@ from utils.predictor import (
 
 st.set_page_config(
     page_title="景区客流智能预测平台",
-    page_icon="🏔️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -207,7 +206,7 @@ st.markdown("""
 with st.sidebar:
     st.markdown("""
     <div style="text-align: center; margin-bottom: 24px;">
-        <div style="font-size: 28px; margin-bottom: 8px;">🏔️</div>
+        <div style="font-size: 28px; margin-bottom: 8px;"></div>
         <div style="font-size: 16px; font-weight: 700; color: #e2e8f0;">景区客流预测平台</div>
         <div style="font-size: 11px; color: #64748b; margin-top: 4px;">v2.0 · 九寨沟数据验证</div>
     </div>
@@ -216,7 +215,7 @@ with st.sidebar:
     st.markdown("---")
     
     # 数据源选择
-    st.markdown("<div style='font-size: 12px; color: #64748b; margin-bottom: 8px; font-weight: 600;'>🎯 数据源配置</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size: 12px; color: #64748b; margin-bottom: 8px; font-weight: 600;'> 数据源配置</div>", unsafe_allow_html=True)
     
     data_source = st.selectbox(
         "训练数据源",
@@ -225,7 +224,7 @@ with st.sidebar:
         help="当前基于九寨沟官网每日公开游客数据训练"
     )
     
-    model_status = "✅ 已加载" if is_model_ready() else "⚠️ 未训练"
+    model_status = " 已加载" if is_model_ready() else " 未训练"
     st.markdown(f"""
     <div style="margin: 12px 0;">
         <span class="badge badge-green">{model_status}</span>
@@ -236,7 +235,7 @@ with st.sidebar:
     st.markdown("---")
     
     # 预测参数
-    st.markdown("<div style='font-size: 12px; color: #64748b; margin-bottom: 8px; font-weight: 600;'>🔮 预测参数</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size: 12px; color: #64748b; margin-bottom: 8px; font-weight: 600;'> 预测参数</div>", unsafe_allow_html=True)
     
     forecast_days = st.slider("预测天数", 3, 14, 7, help="选择未来预测的时间跨度")
     confidence_level = st.select_slider("置信区间", options=["80%", "90%", "95%"], value="90%", help="预测区间的置信度")
@@ -244,7 +243,7 @@ with st.sidebar:
     st.markdown("---")
     
     # 时间范围
-    st.markdown("<div style='font-size: 12px; color: #64748b; margin-bottom: 8px; font-weight: 600;'>📅 时间范围</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size: 12px; color: #64748b; margin-bottom: 8px; font-weight: 600;'> 时间范围</div>", unsafe_allow_html=True)
     
     time_range = st.selectbox(
         "历史数据范围",
@@ -258,12 +257,12 @@ with st.sidebar:
     st.markdown("---")
     
     # 导出
-    st.markdown("<div style='font-size: 12px; color: #64748b; margin-bottom: 8px; font-weight: 600;'>📥 数据导出</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size: 12px; color: #64748b; margin-bottom: 8px; font-weight: 600;'> 数据导出</div>", unsafe_allow_html=True)
     
-    if st.button("📊 导出预测报告", use_container_width=True):
+    if st.button(" 导出预测报告", use_container_width=True):
         st.success("报告生成中...")
     
-    if st.button("📈 导出历史数据", use_container_width=True):
+    if st.button(" 导出历史数据", use_container_width=True):
         st.success("数据准备中...")
     
     st.markdown("---")
@@ -273,7 +272,7 @@ with st.sidebar:
     <div style="font-size: 11px; color: #475569; text-align: center; margin-top: 20px;">
         <div>数据来源: jiuzhai.com</div>
         <div>模型: XGBoost v2.0</div>
-        <div style="margin-top: 8px; color: #3b82f6;">© 2026 景区客流预测平台</div>
+        <div style="margin-top: 8px; color: #3b82f6;"> 2026 景区客流预测平台</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -285,7 +284,7 @@ with st.sidebar:
 st.markdown("""
 <div style="margin-bottom: 24px;">
     <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 4px;">
-        <div style="font-size: 32px;">🏔️</div>
+        <div style="font-size: 32px;"></div>
         <div>
             <div style="font-size: 24px; font-weight: 800; color: #f1f5f9;">景区客流智能预测平台</div>
             <div style="font-size: 13px; color: #64748b; margin-top: 2px;">
@@ -299,7 +298,7 @@ st.markdown("""
 # 模型状态检查
 model_ready = is_model_ready()
 if not model_ready:
-    st.warning("⚠️ 机器学习模型尚未训练。请先运行 `ml/train_model.py` 完成模型训练。当前显示演示数据。")
+    st.warning(" 机器学习模型尚未训练。请先运行 `ml/train_model.py` 完成模型训练。当前显示演示数据。")
 
 # ============================================
 # 获取数据
@@ -351,7 +350,7 @@ else:
 if warning_level == "danger":
     st.markdown("""
     <div class="alert-banner">
-        <div style="font-size: 24px;">🚨</div>
+        <div style="font-size: 24px;"></div>
         <div>
             <div style="font-weight: 700; color: #f87171; font-size: 14px;">红色预警：当前客流接近承载上限</div>
             <div style="font-size: 12px; color: #94a3b8;">建议立即启动限流措施，增派安保人员，并通过广播引导游客错峰游览</div>
@@ -361,7 +360,7 @@ if warning_level == "danger":
 elif warning_level == "warning":
     st.markdown("""
     <div class="alert-banner warning">
-        <div style="font-size: 24px;">⚠️</div>
+        <div style="font-size: 24px;"></div>
         <div>
             <div style="font-weight: 700; color: #fbbf24; font-size: 14px;">黄色预警：客流处于较高水平</div>
             <div style="font-size: 12px; color: #94a3b8;">建议密切关注重点区域人流密度，提前做好疏导准备</div>
@@ -371,7 +370,7 @@ elif warning_level == "warning":
 else:
     st.markdown("""
     <div class="alert-banner normal">
-        <div style="font-size: 24px;">✅</div>
+        <div style="font-size: 24px;"></div>
         <div>
             <div style="font-weight: 700; color: #34d399; font-size: 14px;">运营正常：客流处于安全区间</div>
             <div style="font-size: 12px; color: #94a3b8;">当前客流平稳，建议维持现有运营策略</div>
@@ -423,7 +422,7 @@ chart_col1, chart_col2 = st.columns([7, 3])
 with chart_col1:
     st.markdown("""
     <div class="panel-card">
-        <div class="panel-header">📈 客流趋势与预测</div>
+        <div class="panel-header"> 客流趋势与预测</div>
     """, unsafe_allow_html=True)
     
     if not display_df.empty and not forecast_df.empty:
@@ -535,7 +534,7 @@ with chart_col2:
     # 预测明细表
     st.markdown("""
     <div class="panel-card">
-        <div class="panel-header">🔮 未来7日预测</div>
+        <div class="panel-header"> 未来7日预测</div>
     """, unsafe_allow_html=True)
     
     if not forecast_df.empty:
@@ -571,7 +570,7 @@ with chart_col2:
     # 模型性能指标
     st.markdown("""
     <div class="panel-card">
-        <div class="panel-header">🎯 模型性能</div>
+        <div class="panel-header"> 模型性能</div>
     """, unsafe_allow_html=True)
     
     if metrics:
@@ -606,7 +605,7 @@ feat_col, insight_col = st.columns([5, 3])
 with feat_col:
     st.markdown("""
     <div class="panel-card">
-        <div class="panel-header">🔬 特征重要性分析</div>
+        <div class="panel-header"> 特征重要性分析</div>
     """, unsafe_allow_html=True)
     
     feat_df = get_feature_importance()
@@ -648,7 +647,7 @@ with feat_col:
 with insight_col:
     st.markdown("""
     <div class="panel-card">
-        <div class="panel-header">💡 智能洞察</div>
+        <div class="panel-header"> 智能洞察</div>
     """, unsafe_allow_html=True)
     
     insights = []
@@ -663,22 +662,22 @@ with insight_col:
             trend_change = (recent - prev) / prev * 100 if prev > 0 else 0
             
             if trend_change > 10:
-                insights.append(("📈 短期趋势上升", f"近7日日均客流 {recent:,.0f} 人次，较上周增长 {trend_change:.1f}%，建议增加运营人员配置。", "warning"))
+                insights.append((" 短期趋势上升", f"近7日日均客流 {recent:,.0f} 人次，较上周增长 {trend_change:.1f}%，建议增加运营人员配置。", "warning"))
             elif trend_change < -10:
-                insights.append(("📉 短期趋势下降", f"近7日日均客流 {recent:,.0f} 人次，较上周下降 {abs(trend_change):.1f}%，建议检查是否有特殊事件影响。", "danger"))
+                insights.append((" 短期趋势下降", f"近7日日均客流 {recent:,.0f} 人次，较上周下降 {abs(trend_change):.1f}%，建议检查是否有特殊事件影响。", "danger"))
             else:
-                insights.append(("📊 客流平稳", f"近7日日均客流 {recent:,.0f} 人次，与上周基本持平，运营状况稳定。", "normal"))
+                insights.append((" 客流平稳", f"近7日日均客流 {recent:,.0f} 人次，与上周基本持平，运营状况稳定。", "normal"))
         
         # 洞察2: 峰值预测
         if not forecast_df.empty:
             max_pred = forecast_df["预测"].max()
             max_pred_date = forecast_df.loc[forecast_df["预测"].idxmax(), "日期"]
             if max_pred > capacity * 0.8:
-                insights.append(("⚠️ 高峰预警", f"预测显示 {max_pred_date} 将达 {max_pred:,.0f} 人次，接近承载上限，建议提前部署限流措施。", "danger"))
+                insights.append((" 高峰预警", f"预测显示 {max_pred_date} 将达 {max_pred:,.0f} 人次，接近承载上限，建议提前部署限流措施。", "danger"))
             
         # 洞察3: 模型
         if metrics and metrics.get('r2', 0) > 0.95:
-            insights.append(("🎯 模型高准确度", f"XGBoost 模型 R² = {metrics.get('r2', 0):.4f}，预测准确度极高，可信赖用于运营决策。", "normal"))
+            insights.append((" 模型高准确度", f"XGBoost 模型 R² = {metrics.get('r2', 0):.4f}，预测准确度极高，可信赖用于运营决策。", "normal"))
         
         # 洞察4: 季节性
         if not display_df.empty and len(display_df) > 30:
@@ -686,12 +685,12 @@ with insight_col:
             month_avg = display_df[display_df["日期"].dt.month == current_month]["客流量"].mean()
             overall_avg = display_df["客流量"].mean()
             if month_avg > overall_avg * 1.2:
-                insights.append(("🌸 旺季特征", f"当前处于客流旺季，月均客流 {month_avg:,.0f} 人次，高于全年均值 {overall_avg:,.0f} 人次。", "warning"))
+                insights.append((" 旺季特征", f"当前处于客流旺季，月均客流 {month_avg:,.0f} 人次，高于全年均值 {overall_avg:,.0f} 人次。", "warning"))
     
     # 默认洞察
     if not insights:
         insights = [
-            ("📊 数据加载中", "请完成模型训练以获取实时洞察分析。", "normal"),
+            (" 数据加载中", "请完成模型训练以获取实时洞察分析。", "normal"),
         ]
     
     for title, text, level in insights[:4]:
@@ -715,7 +714,7 @@ table_col, dist_col = st.columns([6, 4])
 with table_col:
     st.markdown("""
     <div class="panel-card">
-        <div class="panel-header">📋 历史数据明细</div>
+        <div class="panel-header"> 历史数据明细</div>
     """, unsafe_allow_html=True)
     
     if not display_df.empty:
@@ -744,7 +743,7 @@ with table_col:
 with dist_col:
     st.markdown("""
     <div class="panel-card">
-        <div class="panel-header">📊 客流分布</div>
+        <div class="panel-header"> 客流分布</div>
     """, unsafe_allow_html=True)
     
     if not display_df.empty:
@@ -788,7 +787,7 @@ with dist_col:
 # ============================================
 st.markdown("""
 <div style="margin-top: 24px; padding: 20px; background: rgba(15,38,66,0.5); border-radius: 12px; border: 1px solid rgba(100,180,255,0.08);">
-    <div style="font-size: 13px; font-weight: 700; color: #e2e8f0; margin-bottom: 8px;">💡 关于数据来源与方法论</div>
+    <div style="font-size: 13px; font-weight: 700; color: #e2e8f0; margin-bottom: 8px;"> 关于数据来源与方法论</div>
     <div style="font-size: 12px; color: #64748b; line-height: 1.6;">
         <strong>为什么用九寨沟数据？</strong> 国内5A级景区中，九寨沟是<strong style="color:#3b82f6;">唯一每日在官网公开精确游客人数</strong>的景区。
         该数据已被多篇 SCI 论文引用做客流预测研究。本项目特征均为通用维度（节假日、天气、历史趋势等），
