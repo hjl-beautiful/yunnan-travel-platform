@@ -1,34 +1,408 @@
+"""
+景区客流预测平台 - 数据洞察页
+数据全景概览 · 特征分析 · 质量评估
+"""
 import streamlit as st
 import plotly.graph_objects as go
-from utils.data_generator import generate_scenic_top10
+from plotly.subplots import make_subplots
+import plotly.express as px
+import pandas as pd
+import numpy as np
+from datetime import datetime
+from scipy import stats
+import os
 
-st.set_page_config(page_title="景点总览", page_icon="", layout="wide")
+st.set_page_config(page_title="数据洞察", page_icon="🔬", layout="wide")
 
-st.markdown("<h2 style='color:#1a1a2e; margin-bottom:20px;'>景点总览</h2>", unsafe_allow_html=True)
+# ========== CSS ==========
+st.markdown("""
+<style>
+    .stApp { background: linear-gradient(135deg, #0a1628 0%, #0f2642 50%, #0a1628 100%); }
+    .main .block-container { padding-top: 1rem; padding-bottom: 1rem; }
+    footer { display: none !important; }
+    header { display: none !important; }
+    .panel-card {
+        background: linear-gradient(145deg, rgba(15,38,66,0.8) 0%, rgba(10,22,40,0.9) 100%);
+        border: 1px solid rgba(100,180,255,0.06);
+        border-radius: 16px; padding: 24px; margin-bottom: 16px;
+    }
+    .panel-header {
+        font-size: 16px; font-weight: 700; color: #e2e8f0; margin-bottom: 16px;
+        display: flex; align-items: center; gap: 8px;
+    }
+    .stat-card {
+        background: linear-gradient(145deg, rgba(15,38,66,0.9) 0%, rgba(10,22,40,0.95) 100%);
+        border: 1px solid rgba(100,180,255,0.08); border-radius: 12px; padding: 16px;
+        text-align: center;
+    }
+    .stat-value { font-size: 22px; font-weight: 800; color: #f1f5f9; }
+    .stat-label { font-size: 11px; color: #64748b; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    hr { border: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(100,180,255,0.15), transparent); margin: 16px 0; }
+</style>
+""", unsafe_allow_html=True)
 
-df = generate_scenic_top10()
+# ========== 加载数据 ==========
+@st.cache_data(ttl=3600)
+def load_data():
+    base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    
+    data = {"daily": None, "features": None, "feat_imp": None, "model_results": None}
+    
+    daily_path = os.path.join(base, "data", "jiuzhaigou_daily.csv")
+    if os.path.exists(daily_path):
+        data["daily"] = pd.read_csv(daily_path, encoding="utf-8-sig")
+        data["daily"]["date"] = pd.to_datetime(data["daily"]["date"])
+    
+    feat_path = os.path.join(base, "data", "jiuzhaigou_features.csv")
+    if os.path.exists(feat_path):
+        data["features"] = pd.read_csv(feat_path, encoding="utf-8-sig")
+        data["features"]["date"] = pd.to_datetime(data["features"]["date"])
+    
+    imp_path = os.path.join(base, "ml", "model", "feature_importance.csv")
+    if os.path.exists(imp_path):
+        data["feat_imp"] = pd.read_csv(imp_path)
+    
+    results_path = os.path.join(base, "ml", "model", "model_results.csv")
+    if os.path.exists(results_path):
+        data["model_results"] = pd.read_csv(results_path, index_col=0)
+    
+    return data
 
-st.markdown("<p style='color:#555866; font-size:14px; margin-bottom:12px;'>全省 TOP10 热门景区累计接待游客排行</p>", unsafe_allow_html=True)
+data = load_data()
+df = data["daily"]
+df_feat = data["features"]
 
-fig = go.Figure()
-colors = ["#4466E0" if row["等级"] == "5A" else "#7D46D9" for _, row in df.iterrows()]
-fig.add_trace(go.Bar(
-    y=list(reversed(df["景区"].tolist())),
-    x=list(reversed(df["客流(万)"].tolist())),
-    orientation="h",
-    marker=dict(color=list(reversed(colors)), line=dict(color="#fff", width=1)),
-    text=[f"{v}万" for v in reversed(df["客流(万)"].tolist())],
-    textposition="outside",
-    textfont=dict(color="#555866", size=12),
-    hovertemplate="<b>%{y}</b><br>客流: %{x}万<extra></extra>",
-))
-fig.update_layout(
-    paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-    margin=dict(l=120, r=50, t=20, b=20), height=400,
-    xaxis=dict(showgrid=False, showticklabels=False),
-    yaxis=dict(showgrid=False, tickfont=dict(color="#1a1a2e", size=13)),
-    bargap=0.35,
-)
-st.plotly_chart(fig, use_container_width=True, key="scenic_top10")
+if df is None:
+    st.error("❌ 未找到数据文件")
+    st.stop()
 
-st.markdown("<p style='color:#555866; font-size:13px; margin-top:10px;'>全省景点信息检索、多维度筛选、景区基础画像查看</p>", unsafe_allow_html=True)
+# ========== 标题 ==========
+st.markdown("""
+<div style="margin-bottom:24px;">
+    <div style="display:flex; align-items:center; gap:12px;">
+        <div style="font-size:32px;">🔬</div>
+        <div>
+            <div style="font-size:24px; font-weight:800; color:#f1f5f9;">数据全景洞察</div>
+            <div style="font-size:13px; color:#64748b;">九寨沟真实数据 · 特征工程分析 · 数据质量评估 · 探索性分析</div>
+        </div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# ========== 第一行：数据概览统计 ==========
+st.markdown('<div class="panel-card">', unsafe_allow_html=True)
+st.markdown('<div class="panel-header">📋 数据集概览</div>', unsafe_allow_html=True)
+
+s1, s2, s3, s4, s5, s6 = st.columns(6)
+
+missing_rate = df["visitors"].isna().sum() / len(df) * 100
+date_span = (df["date"].max() - df["date"].min()).days
+date_gaps = df["date"].diff().dt.days.value_counts().get(1, 0)
+continuity = date_gaps / (len(df) - 1) * 100 if len(df) > 1 else 100
+
+stat_items = [
+    ("数据天数", f"{len(df):,}天", f"连续性: {continuity:.1f}%"),
+    ("时间跨度", f"{date_span}天", f"{df['date'].min().strftime('%Y-%m')} ~ {df['date'].max().strftime('%Y-%m')}"),
+    ("特征维度", f"{len(df_feat.columns) if df_feat is not None else 'N/A'}个", "时间+节假日+滞后+统计"),
+    ("缺失率", f"{missing_rate:.2f}%", "数据完整性"),
+    ("日均客流", f"{df['visitors'].mean():,.0f}", f"中位数: {df['visitors'].median():,.0f}"),
+    ("数据来源", "九寨沟官网", "jiuzhai.com"),
+]
+
+for col, (label, value, sub) in zip([s1, s2, s3, s4, s5, s6], stat_items):
+    with col:
+        st.markdown(f"""
+        <div class="stat-card">
+            <div class="stat-value">{value}</div>
+            <div class="stat-label">{label}</div>
+            <div style="font-size:10px; color:#475569; margin-top:4px;">{sub}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+st.markdown('</div>', unsafe_allow_html=True)
+
+# ========== 第二行：分布分析 + 特征列表 ==========
+col_a, col_b = st.columns([3, 2])
+
+with col_a:
+    st.markdown('<div class="panel-card">', unsafe_allow_html=True)
+    st.markdown('<div class="panel-header">📊 客流量分布分析</div>', unsafe_allow_html=True)
+    
+    fig = make_subplots(rows=1, cols=2, column_widths=[0.4, 0.6],
+                         subplot_titles=("", ""))
+    
+    # 直方图
+    fig.add_trace(go.Histogram(
+        x=df["visitors"], nbinsx=40, name="分布",
+        marker=dict(color="#3b82f6", line=dict(color="#0f2642", width=0.5)),
+        hovertemplate="客流区间<br>天数: %{y}<extra></extra>",
+    ), row=1, col=1)
+    
+    # 核密度估计
+    kde_x = np.linspace(df["visitors"].min(), df["visitors"].max(), 200)
+    kde = stats.gaussian_kde(df["visitors"].dropna())
+    kde_y = kde(kde_x)
+    
+    fig.add_trace(go.Scatter(
+        x=kde_x, y=kde_y * len(df) * (df["visitors"].max() - df["visitors"].min()) / 40,
+        mode="lines", name="密度曲线",
+        line=dict(color="#06b6d4", width=3),
+        hovertemplate="客流: %{x:,.0f}<extra></extra>",
+    ), row=1, col=1)
+    
+    # 分位数标记
+    for pct, color, label in [(25, "#f59e0b", "Q1"), (50, "#10b981", "中位数"), (75, "#8b5cf6", "Q3")]:
+        qv = np.percentile(df["visitors"].dropna(), pct)
+        fig.add_vline(x=qv, line_dash="dash", line_color=color, line_width=1.5, row=1, col=1,
+                       annotation_text=f"{label}: {qv:,.0f}", annotation_font_color=color, annotation_font_size=10)
+    
+    # QQ图
+    sorted_data = np.sort(df["visitors"].dropna())
+    theoretical = stats.norm.ppf((np.arange(1, len(sorted_data)+1) - 0.5) / len(sorted_data),
+                                  loc=sorted_data.mean(), scale=sorted_data.std())
+    
+    fig.add_trace(go.Scatter(
+        x=theoretical, y=sorted_data, mode="markers",
+        marker=dict(color="#3b82f6", size=3, opacity=0.4), name="Q-Q Plot",
+        hovertemplate="理论: %{x:,.0f}<br>实际: %{y:,.0f}<extra></extra>",
+    ), row=1, col=2)
+    
+    # 对角线
+    min_val = min(theoretical.min(), sorted_data.min())
+    max_val = max(theoretical.max(), sorted_data.max())
+    fig.add_trace(go.Scatter(
+        x=[min_val, max_val], y=[min_val, max_val],
+        mode="lines", line=dict(color="#ef4444", width=1, dash="dash"),
+        name="正态参考线", showlegend=False,
+    ), row=1, col=2)
+    
+    fig.update_layout(
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color="#94a3b8"), showlegend=False,
+        margin=dict(l=20, r=20, t=10, b=20), height=420,
+    )
+    fig.update_xaxes(showgrid=True, gridcolor="rgba(100,180,255,0.06)", title="客流量 (人次)", row=1, col=1)
+    fig.update_yaxes(showgrid=True, gridcolor="rgba(100,180,255,0.06)", title="天数", row=1, col=1)
+    fig.update_xaxes(showgrid=True, gridcolor="rgba(100,180,255,0.06)", title="理论分位数", row=1, col=2)
+    fig.update_yaxes(showgrid=True, gridcolor="rgba(100,180,255,0.06)", title="实际分位数", row=1, col=2)
+    
+    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+    st.markdown('</div>', unsafe_allow_html=True)
+
+with col_b:
+    st.markdown('<div class="panel-card">', unsafe_allow_html=True)
+    st.markdown('<div class="panel-header">🏷️ 特征工程总览</div>', unsafe_allow_html=True)
+    
+    if df_feat is not None:
+        feat_cols = df_feat.columns.tolist()
+        # 分类特征
+        time_feats = [c for c in feat_cols if c in ["year", "month", "day", "day_of_week", "is_weekend", "day_of_year", "week_of_year", "quarter", "is_month_start", "is_month_end"]]
+        holiday_feats = [c for c in feat_cols if "holiday" in c.lower() or "golden" in c.lower() or "peak" in c.lower() or "summer" in c.lower()]
+        lag_feats = [c for c in feat_cols if "lag" in c.lower()]
+        roll_feats = [c for c in feat_cols if "roll" in c.lower()]
+        diff_feats = [c for c in feat_cols if "diff" in c.lower() or "wow" in c.lower() or "trend" in c.lower()]
+        
+        categories = [
+            ("⏰ 时间特征", time_feats, "#3b82f6"),
+            ("🎉 节假日特征", holiday_feats, "#f59e0b"),
+            ("⏮️ 滞后特征", lag_feats, "#8b5cf6"),
+            ("📊 滚动统计", roll_feats, "#10b981"),
+            ("📈 差分趋势", diff_feats, "#ec4899"),
+        ]
+        
+        for cat_name, cat_feats, color in categories:
+            if cat_feats:
+                st.markdown(f"""
+                <div style="margin-bottom:10px;">
+                    <span style="background:rgba({','.join(str(int(c,16)) for c in [color[i:i+2] for i in (1,3,5)])},0.15); 
+                                 color:{color}; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600;">{cat_name}</span>
+                    <span style="color:#64748b; font-size:11px; margin-left:6px;">{len(cat_feats)} 个</span>
+                </div>
+                """, unsafe_allow_html=True)
+                feature_tags = " ".join([f'<span style="background:rgba(100,180,255,0.08); color:#94a3b8; padding:2px 8px; border-radius:4px; font-size:10px; margin:2px; display:inline-block;">{f}</span>' for f in cat_feats[:8]])
+                if len(cat_feats) > 8:
+                    feature_tags += f' <span style="color:#64748b; font-size:10px;">+{len(cat_feats)-8} more</span>'
+                st.markdown(f'<div style="margin-bottom:14px; line-height:2;">{feature_tags}</div>', unsafe_allow_html=True)
+    else:
+        st.info("特征工程数据尚未生成，请先运行 data/clean_data.py")
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# ========== 第三行：特征重要性 + 模型对比 ==========
+col_c, col_d = st.columns([1, 1])
+
+with col_c:
+    st.markdown('<div class="panel-card">', unsafe_allow_html=True)
+    st.markdown('<div class="panel-header">🎯 Top 15 特征重要性</div>', unsafe_allow_html=True)
+    
+    if data["feat_imp"] is not None:
+        top_feat = data["feat_imp"].head(15)
+        
+        fig_feat = go.Figure()
+        colors_feat = []
+        for f in top_feat["feature"]:
+            if "lag" in f.lower():
+                colors_feat.append("#8b5cf6")
+            elif "roll" in f.lower() or "mean" in f.lower() or "std" in f.lower():
+                colors_feat.append("#10b981")
+            elif "holiday" in f.lower() or "golden" in f.lower() or "peak" in f.lower():
+                colors_feat.append("#f59e0b")
+            elif "diff" in f.lower() or "trend" in f.lower() or "wow" in f.lower():
+                colors_feat.append("#ec4899")
+            else:
+                colors_feat.append("#3b82f6")
+        
+        fig_feat.add_trace(go.Bar(
+            y=list(reversed(top_feat["feature"])), 
+            x=list(reversed(top_feat["importance"])),
+            orientation="h",
+            marker=dict(color=list(reversed(colors_feat)), line=dict(color="#0f2642", width=0.5)),
+            text=[f"{v:.2f}%" for v in reversed(top_feat["importance"])],
+            textposition="outside", textfont=dict(color="#94a3b8", size=11),
+            hovertemplate="<b>%{y}</b><br>重要性: %{x:.2f}%<extra></extra>",
+        ))
+        fig_feat.update_layout(
+            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+            font=dict(color="#94a3b8"), showlegend=False,
+            margin=dict(l=160, r=60, t=10, b=20), height=460,
+            xaxis=dict(showgrid=True, gridcolor="rgba(100,180,255,0.06)", title="重要性 (%)", title_font_color="#64748b"),
+            yaxis=dict(showgrid=False, autorange="reversed"),
+            bargap=0.3,
+        )
+        st.plotly_chart(fig_feat, use_container_width=True, config={"displayModeBar": False})
+    else:
+        st.info("特征重要性数据将在模型训练后显示，请运行 ml/train_model.py")
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+
+with col_d:
+    st.markdown('<div class="panel-card">', unsafe_allow_html=True)
+    st.markdown('<div class="panel-header">🏆 模型性能对比</div>', unsafe_allow_html=True)
+    
+    if data["model_results"] is not None:
+        results = data["model_results"]
+        
+        # 用表格展示
+        st.markdown("""
+        <table style="width:100%; border-collapse:collapse; font-size:12px;">
+            <thead>
+                <tr style="background:rgba(15,38,66,0.8);">
+                    <th style="padding:8px 12px; text-align:left; color:#94a3b8;">模型</th>
+                    <th style="padding:8px 12px; text-align:right; color:#94a3b8;">R²</th>
+                    <th style="padding:8px 12px; text-align:right; color:#94a3b8;">MAE</th>
+                    <th style="padding:8px 12px; text-align:right; color:#94a3b8;">MAPE</th>
+                </tr>
+            </thead>
+            <tbody>
+        """, unsafe_allow_html=True)
+        
+        for idx, row in results.iterrows():
+            r2 = row.get("R²", row.get("R2", "—"))
+            mae = row.get("MAE", "—")
+            mape = row.get("MAPE", "—")
+            
+            # 高亮最优
+            is_best = "XGBoost" in str(idx) and "最优" in str(idx)
+            bg = "rgba(59,130,246,0.1)" if is_best else ""
+            border = "border-left: 3px solid #3b82f6;" if is_best else ""
+            
+            st.markdown(f"""
+            <tr style="background:{bg};{border}border-bottom:1px solid rgba(100,180,255,0.06);">
+                <td style="padding:10px 12px; color:#e2e8f0; font-weight:{'700' if is_best else '400'};">{idx}</td>
+                <td style="padding:10px 12px; text-align:right; color:#f1f5f9; font-weight:600;">{r2}</td>
+                <td style="padding:10px 12px; text-align:right; color:#94a3b8;">{mae}</td>
+                <td style="padding:10px 12px; text-align:right; color:#94a3b8;">{mape}</td>
+            </tr>
+            """, unsafe_allow_html=True)
+        
+        st.markdown("</tbody></table>", unsafe_allow_html=True)
+        
+        # 模型对比说明
+        st.markdown("""
+        <div style="margin-top:16px; padding:12px; background:rgba(59,130,246,0.05); border-radius:8px; border:1px solid rgba(59,130,246,0.1);">
+            <div style="font-size:12px; font-weight:700; color:#3b82f6; margin-bottom:4px;">📚 参考文献对比</div>
+            <div style="font-size:11px; color:#94a3b8; line-height:1.6;">
+                Cheng, J. et al. (2026). SD-ConvLSTM-Attn: A Hybrid Deep Learning Model for Scenic Spot Tourist Flow Prediction. 
+                <em>MDPI Sustainability</em>, 18(14), 7099. — <strong style="color:#10b981;">R² = 0.892</strong>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.info("模型尚未训练，请运行 ml/train_model.py")
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# ========== 第四行：数据质量 ==========
+st.markdown('<div class="panel-card">', unsafe_allow_html=True)
+st.markdown('<div class="panel-header">✅ 数据质量评估</div>', unsafe_allow_html=True)
+
+q1, q2, q3, q4 = st.columns(4)
+
+# 完整性检查
+missing_count = df["visitors"].isna().sum()
+outlier_count = len(df[df["visitors"] > df["visitors"].quantile(0.99)])
+
+with q1:
+    complete_pct = (1 - missing_count / len(df)) * 100
+    color = "#10b981" if complete_pct > 99 else ("#f59e0b" if complete_pct > 95 else "#ef4444")
+    st.markdown(f"""
+    <div style="background:rgba(16,185,129,0.05); border:1px solid rgba(16,185,129,0.15); border-radius:12px; padding:20px; text-align:center;">
+        <div style="font-size:28px; font-weight:800; color:{color};">{complete_pct:.1f}%</div>
+        <div style="font-size:11px; color:#94a3b8; margin-top:4px;">数据完整性</div>
+        <div style="font-size:10px; color:#475569; margin-top:4px;">缺失 {missing_count} 条 / 总计 {len(df)} 条</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with q2:
+    date_continuity = df["date"].diff().dt.days.value_counts().get(1, 0) / (len(df) - 1) * 100 if len(df) > 1 else 100
+    color2 = "#10b981" if date_continuity > 95 else ("#f59e0b" if date_continuity > 80 else "#ef4444")
+    st.markdown(f"""
+    <div style="background:rgba(16,185,129,0.05); border:1px solid rgba(16,185,129,0.15); border-radius:12px; padding:20px; text-align:center;">
+        <div style="font-size:28px; font-weight:800; color:{color2};">{date_continuity:.1f}%</div>
+        <div style="font-size:11px; color:#94a3b8; margin-top:4px;">日期连续性</div>
+        <div style="font-size:10px; color:#475569; margin-top:4px;">日期间隔为1天的比例</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with q3:
+    # 异常值比例
+    outlier_pct = outlier_count / len(df) * 100
+    color3 = "#10b981" if outlier_pct < 2 else ("#f59e0b" if outlier_pct < 5 else "#ef4444")
+    st.markdown(f"""
+    <div style="background:rgba(16,185,129,0.05); border:1px solid rgba(16,185,129,0.15); border-radius:12px; padding:20px; text-align:center;">
+        <div style="font-size:28px; font-weight:800; color:{color3};">{outlier_pct:.1f}%</div>
+        <div style="font-size:11px; color:#94a3b8; margin-top:4px;">极端值比例</div>
+        <div style="font-size:10px; color:#475569; margin-top:4px;">超过99%分位 {outlier_count} 条</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with q4:
+    # 季节完整性
+    months_present = df["date"].dt.month.nunique()
+    color4 = "#10b981" if months_present >= 11 else ("#f59e0b" if months_present >= 8 else "#ef4444")
+    st.markdown(f"""
+    <div style="background:rgba(16,185,129,0.05); border:1px solid rgba(16,185,129,0.15); border-radius:12px; padding:20px; text-align:center;">
+        <div style="font-size:28px; font-weight:800; color:{color4};">{months_present}/12</div>
+        <div style="font-size:11px; color:#94a3b8; margin-top:4px;">月份覆盖</div>
+        <div style="font-size:10px; color:#475569; margin-top:4px;">12个月中已覆盖 {months_present} 个月</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+st.markdown('</div>', unsafe_allow_html=True)
+
+# ========== 底部 ==========
+st.markdown("""
+<div style="margin-top:20px; padding:16px; background:rgba(15,38,66,0.5); border-radius:12px; 
+            border:1px solid rgba(100,180,255,0.08);">
+    <div style="font-size:12px; font-weight:700; color:#e2e8f0; margin-bottom:8px;">
+        🔧 技术栈
+    </div>
+    <div style="font-size:11px; color:#94a3b8; line-height:1.8;">
+        <strong style="color:#3b82f6;">XGBoost</strong> 梯度提升模型 · 
+        <strong style="color:#8b5cf6;">GridSearchCV</strong> 超参数调优 · 
+        <strong style="color:#10b981;">TimeSeriesSplit</strong> 交叉验证 · 
+        <strong style="color:#f59e0b;">40维</strong> 特征工程 · 
+        <strong style="color:#06b6d4;">SHAP</strong> 可解释性分析
+    </div>
+</div>
+""", unsafe_allow_html=True)

@@ -48,27 +48,25 @@ streamlit run app.py
 
 ```
 .
-├── app.py                    # 主页面（首页 + 导航）
-├── data/
-│   ├── jiuzhaigou_daily.csv        # 原始清洗数据 (1,869行)
-│   ├── jiuzhaigou_features.csv     # 特征工程后数据 (40特征)
-│   ├── clean_data.py               # 数据清洗脚本
-│   └── scrape_jiuzhai.py           # 官网爬虫
-├── ml/
-│   ├── train_model.py              # 模型训练脚本
-│   └── model/
-│       ├── xgboost_model.pkl       # 训练好的模型
-│       ├── scaler.pkl              # 标准化器
-│       ├── feature_names.pkl       # 特征名列表
-│       ├── feature_importance.csv  # 特征重要性
-│       └── model_results.csv       # 模型评估结果
+├── app.py                           # 主页面（预警 + KPI + 趋势图 + 洞察）
 ├── pages/
-│   ├── predict.py          # 预测页面（7日预测 + 模型指标）
-│   ├── scenic.py           # 景区分析页面
-│   ├── flow.py             # 客流热力图
-│   └── compare.py          # 城市对比
+│   ├── flow.py                      # 多维流量分析（时序、星期、月度、年度）
+│   ├── scenic.py                    # 数据全景洞察（分布、特征、质量）
+│   └── predict.py                   # 智能预测中心（7日预测 + 模型详情）
+├── data/
+│   ├── jiuzhaigou_daily.csv         # 原始清洗数据 (1,869行)
+│   ├── jiuzhaigou_features.csv      # 特征工程后数据 (40特征)
+│   └── clean_data.py                # 数据清洗 + 特征工程脚本
+├── ml/
+│   ├── train_model.py               # 模型训练 + GridSearchCV
+│   └── model/
+│       ├── xgboost_model.pkl        # 训练好的模型 (349KB)
+│       ├── scaler.pkl               # 特征标准化器
+│       ├── feature_names.pkl        # 40个特征名称
+│       ├── feature_importance.csv   # 特征重要性排名
+│       └── model_results.csv        # 多模型评估对比
 ├── utils/
-│   └── predictor.py        # 预测器（加载模型 + 滚动预测）
+│   └── predictor.py                 # 预测器（加载模型 + 7日滚动预测）
 └── requirements.txt
 ```
 
