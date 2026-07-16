@@ -180,8 +180,7 @@ fig.update_layout(
         tickformat="%b %d<br>%Y",
     ),
     yaxis=dict(
-        title="客流量（人次）",
-        titlefont=dict(size=13, color="#94a3b8"),
+        title=dict(text="客流量（人次）", font=dict(size=13, color="#94a3b8")),
         tickfont=dict(size=12, color="#94a3b8"),
         showgrid=True, gridcolor="rgba(148, 163, 184, 0.1)",
         tickformat=",",
