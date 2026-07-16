@@ -31,7 +31,7 @@ st.markdown("""
 <div style="margin-bottom: 24px;">
     <h1 style="color:#1e293b; font-size:28px; margin-bottom:4px;">📈 景区客流智能预测</h1>
     <p style="color:#64748b; font-size:14px;">
-        基于 XGBoost 时序预测模型 · 九寨沟4,000+天真实数据训练 · 方法论可迁移至云南景区
+        基于 XGBoost 时序预测模型 · 九寨沟4,000+天真实数据训练 · 方法论可迁移至任意景区
     </p>
 </div>
 """, unsafe_allow_html=True)
