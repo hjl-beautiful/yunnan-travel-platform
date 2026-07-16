@@ -37,12 +37,6 @@
 - **滚动统计**: 3/7/14/30 日滚动均值、标准差、最大/最小值
 - **差分特征**: 1日/7日差分、周环比变化率、趋势强度
 
-## 本地运行
-
-```bash
-pip install -r requirements.txt
-streamlit run app.py
-```
 
 ## 文件结构
 
