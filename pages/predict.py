@@ -15,7 +15,7 @@ from utils.predictor import (
     predict_next_7_days, get_model_metrics, get_feature_importance,
     generate_historical_trend, is_model_ready
 )
-from utils.navbar import render_navbar, render_sidebar, simulate_live_data, render_live_badge
+from utils.navbar import render_navbar, render_sidebar
 
 # ========== 导航栏 + 侧边栏 ==========
 render_navbar("智能预测")
@@ -42,6 +42,8 @@ if auto_refresh and not forecast_df.empty:
     forecast_df["上限"] = (forecast_df["上限"] * (1 + np.random.uniform(0, 0.03, len(forecast_df)))).astype(int)
     forecast_df["下限"] = (forecast_df["下限"] * (1 + np.random.uniform(-0.03, 0, len(forecast_df)))).astype(int)
 
+capacity = 41000
+
 # ========== 模型状态 ==========
 st.markdown(f"""
 <div style="margin-bottom:16px; display:flex; align-items:center; gap:12px;">
@@ -53,46 +55,46 @@ st.markdown(f"""
 # ========== 模型指标卡片 ==========
 with st.container(border=True):
     st.markdown('<div class="panel-header">模型性能指标</div>', unsafe_allow_html=True)
-
-if metrics:
-    m1, m2, m3, m4, m5 = st.columns(5)
     
-    # 动态浮动指标
-    r2_val = metrics['r2']
-    mae_val = metrics['mae']
-    rmse_val = metrics['rmse']
-    mape_val = metrics['mape']
-    
-    if auto_refresh:
-        r2_display = r2_val + random.uniform(-0.005, 0.005)
-        mae_display = mae_val + random.randint(-20, 20)
-        rmse_display = rmse_val + random.randint(-30, 30)
-        mape_display = mape_val + random.uniform(-0.2, 0.2)
+    if metrics:
+        m1, m2, m3, m4, m5 = st.columns(5)
+        
+        # 动态浮动指标
+        r2_val = metrics['r2']
+        mae_val = metrics['mae']
+        rmse_val = metrics['rmse']
+        mape_val = metrics['mape']
+        
+        if auto_refresh:
+            r2_display = r2_val + random.uniform(-0.005, 0.005)
+            mae_display = mae_val + random.randint(-20, 20)
+            rmse_display = rmse_val + random.randint(-30, 30)
+            mape_display = mape_val + random.uniform(-0.2, 0.2)
+        else:
+            r2_display = r2_val
+            mae_display = mae_val
+            rmse_display = rmse_val
+            mape_display = mape_val
+        
+        metric_items = [
+            ("R² 决定系数", f"{r2_display:.4f}", "越接近1越好", "#3b82f6"),
+            ("MAE 平均误差", f"{mae_display:,.0f}", "预测偏差均值", "#10b981"),
+            ("RMSE 均方根误差", f"{rmse_display:,.0f}", "大误差惩罚", "#8b5cf6"),
+            ("MAPE 误差率", f"{mape_display:.1f}%", "相对误差比例", "#f59e0b"),
+            ("对比论文", "超越", "MDPI 2026 R²=0.892", "#06b6d4"),
+        ]
+        
+        for col, (label, value, desc, color) in zip([m1, m2, m3, m4, m5], metric_items):
+            with col:
+                st.markdown(f"""
+                <div class="stat-card {'live-card' if auto_refresh else ''}" style="border-top:3px solid {color};">
+                    <div class="stat-label">{label}</div>
+                    <div style="font-size:28px; font-weight:800; color:{color}; margin:8px 0;">{value}</div>
+                    <div style="font-size:10px; color:#94a3b8;">{desc}</div>
+                </div>
+                """, unsafe_allow_html=True)
     else:
-        r2_display = r2_val
-        mae_display = mae_val
-        rmse_display = rmse_val
-        mape_display = mape_val
-    
-    metric_items = [
-        ("R² 决定系数", f"{r2_display:.4f}", "越接近1越好", "#3b82f6"),
-        ("MAE 平均误差", f"{mae_display:,.0f}", "预测偏差均值", "#10b981"),
-        ("RMSE 均方根误差", f"{rmse_display:,.0f}", "大误差惩罚", "#8b5cf6"),
-        ("MAPE 误差率", f"{mape_display:.1f}%", "相对误差比例", "#f59e0b"),
-        ("对比论文", "超越", "MDPI 2026 R²=0.892", "#06b6d4"),
-    ]
-    
-    for col, (label, value, desc, color) in zip([m1, m2, m3, m4, m5], metric_items):
-        with col:
-            st.markdown(f"""
-            <div class="stat-card {'live-card' if auto_refresh else ''}" style="border-top:3px solid {color};">
-                <div class="stat-label">{label}</div>
-                <div style="font-size:28px; font-weight:800; color:{color}; margin:8px 0;">{value}</div>
-                <div style="font-size:10px; color:#94a3b8;">{desc}</div>
-            </div>
-            """, unsafe_allow_html=True)
-else:
-    st.info("模型尚未训练，显示演示数据。请运行 ml/train_model.py")
+        st.info("模型尚未训练，显示演示数据。请运行 ml/train_model.py")
 
 # ========== 预测图表 ==========
 col_main, col_side = st.columns([7, 3])
@@ -102,111 +104,114 @@ with col_main:
         st.markdown('<div class="panel-header">7日客流预测</div>', unsafe_allow_html=True)
         
         if not hist_df.empty and not forecast_df.empty:
-        last_hist_date = hist_df["日期"].iloc[-1]
-        forecast_dates = pd.to_datetime([last_hist_date + timedelta(days=i+1) for i in range(len(forecast_df))])
-        
-        fig = make_subplots(rows=2, cols=1, shared_xaxes=True,
-                             vertical_spacing=0.06, row_heights=[0.72, 0.28])
-        
-        fig.add_trace(go.Scatter(
-            x=hist_df["日期"], y=hist_df["客流量"],
-            mode="lines", name="近期客流",
-            line=dict(color="#3b82f6", width=2.5),
-            fill="tozeroy", fillcolor="rgba(59,130,246,0.06)",
-            hovertemplate="<b>%{x}</b><br>客流: %{y:,.0f}<extra></extra>"
-        ), row=1, col=1)
-        
-        fig.add_trace(go.Scatter(
-            x=forecast_dates, y=forecast_df["预测"],
-            mode="lines+markers", name="AI预测",
-            line=dict(color="#06b6d4", width=3),
-            marker=dict(size=10, color="#06b6d4", line=dict(color="white", width=2)),
-            hovertemplate="<b>%{x}</b><br>预测: %{y:,.0f}<extra></extra>"
-        ), row=1, col=1)
-        
-        fig.add_trace(go.Scatter(
-            x=list(forecast_dates) + list(forecast_dates)[::-1],
-            y=list(forecast_df["上限"]) + list(forecast_df["下限"])[::-1],
-            fill="toself", fillcolor="rgba(6,182,212,0.12)",
-            line=dict(color="rgba(0,0,0,0)"), name="90%置信区间",
-            hoverinfo="skip"
-        ), row=1, col=1)
-        
-        capacity = 41000
-        fig.add_hline(y=capacity, line_dash="dash", line_color="#ef4444", line_width=1.5,
-                       annotation_text="承载上限 41,000", annotation_position="right",
-                       annotation_font_color="#ef4444", annotation_font_size=10, row=1, col=1)
-        
-        if len(forecast_df) > 1:
-            pred_values = forecast_df["预测"].values
-            mom = [(pred_values[i] - pred_values[i-1]) / pred_values[i-1] * 100 for i in range(1, len(pred_values))]
-            mom = [0] + mom
-            mom_colors = ["#34d399" if v >= 0 else "#f87171" for v in mom]
+            last_hist_date = hist_df["日期"].iloc[-1]
+            forecast_dates = pd.to_datetime([last_hist_date + timedelta(days=i+1) for i in range(len(forecast_df))])
             
-            fig.add_trace(go.Bar(
-                x=forecast_dates, y=mom,
-                marker_color=mom_colors, name="日环比",
-                text=[f"{v:+.1f}%" for v in mom],
-                textposition="outside", textfont=dict(color="#94a3b8", size=10),
-                hovertemplate="<b>%{x}</b><br>环比: %{y:+.1f}%<extra></extra>"
-            ), row=2, col=1)
-        
-        fig.update_layout(
-            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-            font=dict(color="#94a3b8", size=12),
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
-                         font=dict(color="#94a3b8", size=11), bgcolor="rgba(0,0,0,0)"),
-            margin=dict(l=40, r=40, t=10, b=20), height=560,
-            hovermode="x unified",
-        )
-        fig.update_xaxes(showgrid=False, zeroline=False, row=1, col=1)
-        fig.update_yaxes(showgrid=True, gridcolor="rgba(100,180,255,0.06)", zeroline=False, tickformat=",", 
-                          title="客流量 (人次)", row=1, col=1)
-        fig.update_xaxes(showgrid=False, row=2, col=1)
-        fig.update_yaxes(showgrid=True, gridcolor="rgba(100,180,255,0.06)", zeroline=True, 
-                          zerolinecolor="rgba(100,180,255,0.1)", title="日环比 (%)", row=2, col=1)
-        
-        st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+            fig = make_subplots(rows=2, cols=1, shared_xaxes=True,
+                                 vertical_spacing=0.06, row_heights=[0.72, 0.28])
+            
+            fig.add_trace(go.Scatter(
+                x=hist_df["日期"], y=hist_df["客流量"],
+                mode="lines", name="近期客流",
+                line=dict(color="#3b82f6", width=2.5),
+                fill="tozeroy", fillcolor="rgba(59,130,246,0.06)",
+                hovertemplate="<b>%{x}</b><br>客流: %{y:,.0f}<extra></extra>"
+            ), row=1, col=1)
+            
+            fig.add_trace(go.Scatter(
+                x=forecast_dates, y=forecast_df["预测"],
+                mode="lines+markers", name="AI预测",
+                line=dict(color="#06b6d4", width=3),
+                marker=dict(size=10, color="#06b6d4", line=dict(color="white", width=2)),
+                hovertemplate="<b>%{x}</b><br>预测: %{y:,.0f}<extra></extra>"
+            ), row=1, col=1)
+            
+            fig.add_trace(go.Scatter(
+                x=list(forecast_dates) + list(forecast_dates)[::-1],
+                y=list(forecast_df["上限"]) + list(forecast_df["下限"])[::-1],
+                fill="toself", fillcolor="rgba(6,182,212,0.12)",
+                line=dict(color="rgba(0,0,0,0)"), name="90%置信区间",
+                hoverinfo="skip"
+            ), row=1, col=1)
+            
+            fig.add_hline(y=capacity, line_dash="dash", line_color="#ef4444", line_width=1.5,
+                           annotation_text="承载上限 41,000", annotation_position="right",
+                           annotation_font_color="#ef4444", annotation_font_size=10, row=1, col=1)
+            
+            if len(forecast_df) > 1:
+                pred_values = forecast_df["预测"].values
+                mom = [(pred_values[i] - pred_values[i-1]) / pred_values[i-1] * 100 for i in range(1, len(pred_values))]
+                mom = [0] + mom
+                mom_colors = ["#34d399" if v >= 0 else "#f87171" for v in mom]
+                
+                fig.add_trace(go.Bar(
+                    x=forecast_dates, y=mom,
+                    marker_color=mom_colors, name="日环比",
+                    text=[f"{v:+.1f}%" for v in mom],
+                    textposition="outside", textfont=dict(color="#94a3b8", size=10),
+                    hovertemplate="<b>%{x}</b><br>环比: %{y:+.1f}%<extra></extra>"
+                ), row=2, col=1)
+            
+            fig.update_layout(
+                paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+                font=dict(color="#94a3b8", size=12),
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
+                             font=dict(color="#94a3b8", size=11), bgcolor="rgba(0,0,0,0)"),
+                margin=dict(l=40, r=40, t=10, b=20), height=560,
+                hovermode="x unified",
+            )
+            fig.update_xaxes(showgrid=False, zeroline=False, row=1, col=1)
+            fig.update_yaxes(showgrid=True, gridcolor="rgba(100,180,255,0.06)", zeroline=False, tickformat=",", 
+                              title="客流量 (人次)", row=1, col=1)
+            fig.update_xaxes(showgrid=False, row=2, col=1)
+            fig.update_yaxes(showgrid=True, gridcolor="rgba(100,180,255,0.06)", zeroline=True, 
+                              zerolinecolor="rgba(100,180,255,0.1)", title="日环比 (%)", row=2, col=1)
+            
+            st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+        else:
+            st.warning("数据加载中，请稍候...")
 
 with col_side:
     with st.container(border=True):
         st.markdown('<div class="panel-header">7日预测明细</div>', unsafe_allow_html=True)
         
-        capacity = 41000
-    for _, row in forecast_df.iterrows():
-        date_str = row["日期"]
-        pred = row["预测"]
-        upper = row["上限"]
-        lower = row["下限"]
-        
-        if pred > capacity * 0.9:
-            badge = '<span class="badge badge-red">高负荷</span>'
-        elif pred > capacity * 0.7:
-            badge = '<span class="badge badge-yellow">预警</span>'
+        if not forecast_df.empty:
+            for _, row in forecast_df.iterrows():
+                date_str = row["日期"]
+                pred = row["预测"]
+                upper = row["上限"]
+                lower = row["下限"]
+                
+                if pred > capacity * 0.9:
+                    badge = '<span class="badge badge-red">高负荷</span>'
+                elif pred > capacity * 0.7:
+                    badge = '<span class="badge badge-yellow">预警</span>'
+                else:
+                    badge = '<span class="badge badge-green">正常</span>'
+                
+                load_rate = min(pred / capacity * 100, 100)
+                bar_color = "#ef4444" if load_rate > 90 else ("#f59e0b" if load_rate > 70 else "#10b981")
+                
+                st.markdown(f"""
+                <div style="padding:12px 0; border-bottom:1px solid rgba(100,180,255,0.06);">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <div style="font-size:14px; font-weight:700; color:#e2e8f0;">{date_str}</div>
+                            <div style="font-size:10px; color:#94a3b8;">{lower:,.0f} - {upper:,.0f} (90% CI)</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:18px; font-weight:800; color:#06b6d4;">{pred:,.0f}</div>
+                            <div style="font-size:10px; color:#94a3b8;">载客率 {load_rate:.1f}%</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:4px;">{badge}</div>
+                    <div style="margin-top:6px; height:4px; background:rgba(100,180,255,0.1); border-radius:2px; overflow:hidden;">
+                        <div style="height:100%; width:{load_rate}%; background:{bar_color}; border-radius:2px;"></div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
         else:
-            badge = '<span class="badge badge-green">正常</span>'
-        
-        load_rate = min(pred / capacity * 100, 100)
-        bar_color = "#ef4444" if load_rate > 90 else ("#f59e0b" if load_rate > 70 else "#10b981")
-        
-        st.markdown(f"""
-        <div style="padding:12px 0; border-bottom:1px solid rgba(100,180,255,0.06);">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div>
-                    <div style="font-size:14px; font-weight:700; color:#e2e8f0;">{date_str}</div>
-                    <div style="font-size:10px; color:#94a3b8;">{lower:,.0f} - {upper:,.0f} (90% CI)</div>
-                </div>
-                <div style="text-align:right;">
-                    <div style="font-size:18px; font-weight:800; color:#06b6d4;">{pred:,.0f}</div>
-                    <div style="font-size:10px; color:#94a3b8;">载客率 {load_rate:.1f}%</div>
-                </div>
-            </div>
-            <div style="margin-top:4px;">{badge}</div>
-            <div style="margin-top:6px; height:4px; background:rgba(100,180,255,0.1); border-radius:2px; overflow:hidden;">
-                <div style="height:100%; width:{load_rate}%; background:{bar_color}; border-radius:2px;"></div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+            st.info("暂无预测数据")
     
     # 特征重要性
     with st.container(border=True):
@@ -228,13 +233,15 @@ with col_side:
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
+        else:
+            st.info("特征重要性数据将在模型训练后显示")
 
 # ========== 底部：技术架构 + 可迁移性 ==========
 col_tech, col_ref = st.columns([2, 1])
 
 with col_tech:
     st.markdown("""
-    <div style="padding:20px; background:rgba(15,38,66,0.5); border-radius:12px; border:1px solid rgba(100,180,255,0.08);">
+    <div style="padding:20px; background:linear-gradient(145deg, rgba(13,30,54,0.95) 0%, rgba(8,18,34,0.98) 100%); border-radius:12px; border:1px solid rgba(100,180,255,0.12);">
         <div style="font-size:13px; font-weight:700; color:#e2e8f0; margin-bottom:10px;">技术架构</div>
         <div style="font-size:11px; color:#94a3b8; line-height:1.8;">
             <strong style="color:#3b82f6;">XGBoost</strong> 梯度提升决策树，基于40维特征进行时序预测。<br>
@@ -246,7 +253,7 @@ with col_tech:
 
 with col_ref:
     st.markdown("""
-    <div style="padding:20px; background:rgba(15,38,66,0.5); border-radius:12px; border:1px solid rgba(100,180,255,0.08);">
+    <div style="padding:20px; background:linear-gradient(145deg, rgba(13,30,54,0.95) 0%, rgba(8,18,34,0.98) 100%); border-radius:12px; border:1px solid rgba(100,180,255,0.12);">
         <div style="font-size:13px; font-weight:700; color:#e2e8f0; margin-bottom:10px;">可迁移性</div>
         <div style="font-size:11px; color:#94a3b8; line-height:1.8;">
             所有特征均为<strong style="color:#06b6d4;">通用维度</strong>（时间、节假日、历史趋势），

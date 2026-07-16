@@ -18,9 +18,18 @@ def render_navbar(current_page: str = "首页"):
         initial_sidebar_state="expanded"
     )
     
-    # 修复侧边栏和导航栏颜色 + 隐藏默认导航
+    # 修复侧边栏和导航栏颜色 + 隐藏默认导航 + 强制深色背景
     st.markdown("""
     <style>
+        /* 强制全局深色背景 */
+        .stApp {
+            background: linear-gradient(135deg, #0a1628 0%, #0f2642 50%, #0a1628 100%) !important;
+        }
+        .main .block-container {
+            padding-top: 0.5rem !important;
+            padding-bottom: 1rem !important;
+        }
+        
         /* 修复侧边栏背景 - 更亮更清晰 */
         [data-testid="stSidebar"] {
             background: linear-gradient(180deg, #111d32 0%, #0d1e36 100%) !important;
@@ -38,10 +47,17 @@ def render_navbar(current_page: str = "首页"):
         /* 隐藏 Streamlit 默认页面导航 */
         [data-testid="stSidebarNav"] { display: none !important; }
         
-        /* 修复主内容区顶部padding */
-        .main .block-container {
-            padding-top: 0.5rem !important;
-            padding-bottom: 1rem !important;
+        /* Streamlit container border=True 的深色背景覆盖 */
+        [data-testid="stVerticalBlockBorderWrapper"] {
+            background: linear-gradient(145deg, rgba(13,30,54,0.95) 0%, rgba(8,18,34,0.98) 100%) !important;
+            border: 1px solid rgba(100, 180, 255, 0.12) !important;
+            border-radius: 16px !important;
+            padding: 4px 20px 20px 20px !important;
+            margin-bottom: 16px !important;
+        }
+        [data-testid="stVerticalBlockBorderWrapper"] > div {
+            border: none !important;
+            box-shadow: none !important;
         }
         
         /* 面板卡片 - 深色背景 */
@@ -59,6 +75,28 @@ def render_navbar(current_page: str = "首页"):
             margin-bottom: 16px;
             padding-bottom: 12px;
             border-bottom: 1px solid rgba(100, 180, 255, 0.08);
+        }
+        
+        /* 统计卡片 */
+        .stat-card {
+            background: linear-gradient(145deg, rgba(15,38,66,0.9) 0%, rgba(10,22,40,0.95) 100%);
+            border: 1px solid rgba(100,180,255,0.08);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: #f1f5f9;
+            font-family: 'Inter', sans-serif;
+        }
+        .stat-label {
+            font-size: 11px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
         }
         
         /* 顶部固定标题栏 */
@@ -79,7 +117,7 @@ def render_navbar(current_page: str = "首页"):
         }
         .top-header-subtitle {
             font-size: 12px;
-            color: #64748b;
+            color: #94a3b8;
         }
         .top-header-nav {
             display: flex;
@@ -135,6 +173,34 @@ def render_navbar(current_page: str = "首页"):
         .live-card {
             animation: flash 3s ease-in-out infinite;
         }
+        
+        /* 标签样式 */
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .badge-green {
+            background: rgba(34, 197, 94, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+        .badge-yellow {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        .badge-red {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        
+        /* 隐藏默认元素 */
+        footer { display: none !important; }
+        header { display: none !important; }
     </style>
     """, unsafe_allow_html=True)
     
@@ -148,6 +214,7 @@ def render_navbar(current_page: str = "首页"):
         ("客流分析", "flow"),
         ("智能预测", "predict"),
         ("数据洞察", "scenic"),
+        ("运营决策", "decision"),
     ]
     
     # 构建导航链接 HTML
@@ -171,7 +238,7 @@ def render_navbar(current_page: str = "首页"):
             <div class="top-header-nav">
                 {nav_html}
             </div>
-            <div style="font-size:11px; color:#475569;">{current_time}</div>
+            <div style="font-size:11px; color:#94a3b8;">{current_time}</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -183,14 +250,14 @@ def render_sidebar():
         st.markdown("""
         <div style="text-align:center; margin-bottom:20px;">
             <div style="font-size:18px; font-weight:700; color:#e2e8f0;">景区客流预测平台</div>
-            <div style="font-size:11px; color:#64748b; margin-top:4px;">v2.1 | 九寨沟数据验证</div>
+            <div style="font-size:11px; color:#94a3b8; margin-top:4px;">v2.2 | 九寨沟数据验证</div>
         </div>
         """, unsafe_allow_html=True)
         
         st.markdown("---")
         
         # 导航菜单
-        st.markdown("<div style='font-size:12px; color:#64748b; margin-bottom:8px; font-weight:600;'>页面导航</div>", unsafe_allow_html=True)
+        st.markdown("<div style='font-size:12px; color:#e2e8f0; margin-bottom:8px; font-weight:600;'>页面导航</div>", unsafe_allow_html=True)
         
         cols = st.columns(2)
         with cols[0]:
@@ -208,10 +275,18 @@ def render_sidebar():
             if st.button("数据洞察", use_container_width=True, key="nav_scenic"):
                 st.switch_page("pages/scenic.py")
         
+        cols3 = st.columns(2)
+        with cols3[0]:
+            if st.button("运营决策", use_container_width=True, key="nav_decision"):
+                st.switch_page("pages/decision.py")
+        with cols3[1]:
+            if st.button("API文档", use_container_width=True, key="nav_api"):
+                st.markdown("<div style='font-size:10px; color:#94a3b8;'>本地运行: python -m api.main</div>", unsafe_allow_html=True)
+        
         st.markdown("---")
         
         # 实时刷新控制
-        st.markdown("<div style='font-size:12px; color:#64748b; margin-bottom:8px; font-weight:600;'>实时刷新</div>", unsafe_allow_html=True)
+        st.markdown("<div style='font-size:12px; color:#e2e8f0; margin-bottom:8px; font-weight:600;'>实时刷新</div>", unsafe_allow_html=True)
         
         auto_refresh = st.toggle("自动刷新数据", value=False, key="auto_refresh")
         refresh_interval = st.select_slider("刷新间隔", options=["2s", "5s", "10s", "30s"], value="5s", key="refresh_interval")
@@ -223,10 +298,10 @@ def render_sidebar():
         
         # 数据源信息
         st.markdown("""
-        <div style="font-size:11px; color:#475569; text-align:center; margin-top:20px;">
+        <div style="font-size:11px; color:#94a3b8; text-align:center; margin-top:20px;">
             <div>数据来源: jiuzhai.com</div>
             <div>模型: XGBoost v2.0</div>
-            <div style="margin-top:8px; color:#3b82f6;"> 2026 景区客流预测平台</div>
+            <div style="margin-top:8px; color:#e2e8f0;">2026 景区客流预测平台</div>
         </div>
         """, unsafe_allow_html=True)
         

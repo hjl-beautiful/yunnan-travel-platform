@@ -91,19 +91,19 @@ def get_shap_importance(top_n=10):
     return pd.DataFrame()
 
 
-def predict_next_7_days():
-    """预测未来7天客流量"""
+def predict_next_7_days(days=7):
+    """预测未来 N 天客流量（默认7天）"""
     _load_model()
     
     if _model is None:
-        return _mock_prediction_7days()
+        return _mock_prediction_7days(days=days)
     
     # 加载历史数据
     features_path = os.path.join(DATA_DIR, "jiuzhaigou_features.csv")
     if not os.path.exists(features_path):
         raw_path = os.path.join(DATA_DIR, "jiuzhaigou_daily.csv")
         if not os.path.exists(raw_path):
-            return _mock_prediction_7days()
+            return _mock_prediction_7days(days=days)
         
         df = pd.read_csv(raw_path, encoding="utf-8-sig")
         df["date"] = pd.to_datetime(df["date"])
@@ -128,7 +128,7 @@ def predict_next_7_days():
     # 滚动历史值
     recent_visitors = list(latest_visitors[-60:])  # 最近60天
     
-    for day_offset in range(1, 8):
+    for day_offset in range(1, days + 1):
         pred_date = latest_date + timedelta(days=day_offset)
         pred_dates.append(pred_date)
         
@@ -240,18 +240,18 @@ def _check_near_holiday(date, holidays):
     return 0
 
 
-def _mock_prediction_7days():
+def _mock_prediction_7days(days=7):
     """模型未就绪时的模拟预测（有明确提示）"""
-    dates = [(datetime.now() + timedelta(days=i)).strftime("%m-%d") for i in range(1, 8)]
+    dates = [(datetime.now() + timedelta(days=i)).strftime("%m-%d") for i in range(1, days + 1)]
     base = 15000
     np.random.seed(42)
-    preds = base + np.random.normal(0, 2000, 7).astype(int)
+    preds = base + np.random.normal(0, 2000, days).astype(int)
     return pd.DataFrame({
         "日期": dates,
         "预测": [max(0, int(p)) for p in preds],
         "上限": [max(0, int(p * 1.15)) for p in preds],
         "下限": [max(0, int(p * 0.85)) for p in preds],
-        "完整日期": [(datetime.now() + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(1, 8)],
+        "完整日期": [(datetime.now() + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(1, days + 1)],
     })
 
 
