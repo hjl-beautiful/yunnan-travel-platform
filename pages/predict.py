@@ -218,35 +218,57 @@ with col_main:
             trend_text = "持续上升" if mom_vals.mean() > 0.5 else ("持续下降" if mom_vals.mean() < -0.5 else "相对平稳")
             trend_color = "#34d399" if mom_vals.mean() > 0.5 else ("#f87171" if mom_vals.mean() < -0.5 else "#fbbf24")
             
-            st.markdown(f"""
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
-                <div style="background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.15); border-radius:8px; padding:10px;">
-                    <div style="font-size:11px; color:#cbd5e1;">预测峰值</div>
-                    <div style="font-size:16px; font-weight:700; color:#e2e8f0;">{peak:,.0f}</div>
-                    <div style="font-size:10px; color:#cbd5e1;">{peak_date}</div>
+            col_left, col_right = st.columns([3, 2])
+            with col_left:
+                st.markdown(f"""
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                    <div style="background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.15); border-radius:8px; padding:10px;">
+                        <div style="font-size:11px; color:#cbd5e1;">预测峰值</div>
+                        <div style="font-size:16px; font-weight:700; color:#e2e8f0;">{peak:,.0f}</div>
+                        <div style="font-size:10px; color:#cbd5e1;">{peak_date}</div>
+                    </div>
+                    <div style="background:rgba(6,182,212,0.08); border:1px solid rgba(6,182,212,0.15); border-radius:8px; padding:10px;">
+                        <div style="font-size:11px; color:#cbd5e1;">7日平均</div>
+                        <div style="font-size:16px; font-weight:700; color:#e2e8f0;">{avg_forecast:,.0f}</div>
+                        <div style="font-size:10px; color:#cbd5e1;">人次/日</div>
+                    </div>
+                    <div style="background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.15); border-radius:8px; padding:10px;">
+                        <div style="font-size:11px; color:#cbd5e1;">预警/高负荷</div>
+                        <div style="font-size:16px; font-weight:700; color:#e2e8f0;">{warn_days}/{high_days}</div>
+                        <div style="font-size:10px; color:#cbd5e1;">天</div>
+                    </div>
+                    <div style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.15); border-radius:8px; padding:10px;">
+                        <div style="font-size:11px; color:#cbd5e1;">整体趋势</div>
+                        <div style="font-size:16px; font-weight:700; color:{trend_color};">{trend_text}</div>
+                        <div style="font-size:10px; color:#cbd5e1;">日均环比 {mom_vals.mean():+.1f}%</div>
+                    </div>
                 </div>
-                <div style="background:rgba(6,182,212,0.08); border:1px solid rgba(6,182,212,0.15); border-radius:8px; padding:10px;">
-                    <div style="font-size:11px; color:#cbd5e1;">7日平均</div>
-                    <div style="font-size:16px; font-weight:700; color:#e2e8f0;">{avg_forecast:,.0f}</div>
-                    <div style="font-size:10px; color:#cbd5e1;">人次/日</div>
+                <div style="font-size:12px; color:#cbd5e1; line-height:1.6;">
+                    • 未来7日预计有 <strong style="color:#f59e0b;">{warn_days} 天</strong> 达到预警阈值，需提前安排运力与人员。<br>
+                    • 峰值预计出现在 <strong style="color:#06b6d4;">{peak_date}</strong>，当日客流 {peak:,.0f} 人次，建议重点监控。<br>
+                    • 预测趋势 <strong style="color:{trend_color};">{trend_text}</strong>，可参考建议调整运营策略。
                 </div>
-                <div style="background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.15); border-radius:8px; padding:10px;">
-                    <div style="font-size:11px; color:#cbd5e1;">预警/高负荷</div>
-                    <div style="font-size:16px; font-weight:700; color:#e2e8f0;">{warn_days}/{high_days}</div>
-                    <div style="font-size:10px; color:#cbd5e1;">天</div>
-                </div>
-                <div style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.15); border-radius:8px; padding:10px;">
-                    <div style="font-size:11px; color:#cbd5e1;">整体趋势</div>
-                    <div style="font-size:16px; font-weight:700; color:{trend_color};">{trend_text}</div>
-                    <div style="font-size:10px; color:#cbd5e1;">日均环比 {mom_vals.mean():+.1f}%</div>
-                </div>
-            </div>
-            <div style="font-size:12px; color:#cbd5e1; line-height:1.6;">
-                • 未来7日预计有 <strong style="color:#f59e0b;">{warn_days} 天</strong> 达到预警阈值，需提前安排运力与人员。<br>
-                • 峰值预计出现在 <strong style="color:#06b6d4;">{peak_date}</strong>，当日客流 {peak:,.0f} 人次，建议重点监控。<br>
-                • 预测趋势 <strong style="color:{trend_color};">{trend_text}</strong>，可参考建议调整运营策略。
-            </div>
-            """, unsafe_allow_html=True)
+                """, unsafe_allow_html=True)
+            
+            with col_right:
+                high_count = int((forecast_df["预测"] > capacity * 0.9).sum())
+                warn_count = int(((forecast_df["预测"] > capacity * 0.7) & (forecast_df["预测"] <= capacity * 0.9)).sum())
+                normal_count = max(0, len(forecast_df) - high_count - warn_count)
+                
+                fig_pie = go.Figure(data=[go.Pie(
+                    labels=["正常", "预警", "高负荷"], values=[normal_count, warn_count, high_count], hole=0.55,
+                    marker=dict(colors=["#10b981", "#f59e0b", "#ef4444"], line=dict(color="rgba(0,0,0,0)", width=0)),
+                    textinfo="label+percent", textposition="outside",
+                    textfont=dict(color="#cbd5e1", size=11),
+                    hovertemplate="<b>%{label}</b><br>天数: %{value}<br>占比: %{percent}<extra></extra>"
+                )])
+                fig_pie.update_layout(
+                    paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+                    font=dict(color="#cbd5e1", size=11), showlegend=False,
+                    margin=dict(l=10, r=10, t=10, b=10), height=240,
+                    annotations=[dict(text="负荷等级", x=0.5, y=0.5, font_size=12, font_color="#e2e8f0", showarrow=False)]
+                )
+                st.plotly_chart(fig_pie, use_container_width=True, key="load_pie_chart", config={"displayModeBar": False})
         else:
             st.info("暂无预测数据")
 
