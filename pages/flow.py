@@ -3,6 +3,7 @@
 九寨沟真实数据驱动 · 多维度客流分析
 """
 import streamlit as st
+import time
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import pandas as pd
@@ -10,36 +11,13 @@ import numpy as np
 from datetime import datetime, timedelta
 from scipy import stats
 import os
+import sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from utils.navbar import render_navbar, render_sidebar
 
-st.set_page_config(page_title="客流分析", layout="wide")
-
-# ========== 全局 CSS ==========
-st.markdown("""
-<style>
-    .stApp { background: linear-gradient(135deg, #0a1628 0%, #0f2642 50%, #0a1628 100%); }
-    .main .block-container { padding-top: 1rem; padding-bottom: 1rem; }
-    footer { display: none !important; }
-    header { display: none !important; }
-    
-    .panel-card {
-        background: linear-gradient(145deg, rgba(15,38,66,0.8) 0%, rgba(10,22,40,0.9) 100%);
-        border: 1px solid rgba(100,180,255,0.06);
-        border-radius: 16px; padding: 24px; margin-bottom: 16px;
-    }
-    .panel-header {
-        font-size: 16px; font-weight: 700; color: #e2e8f0; margin-bottom: 16px;
-        display: flex; align-items: center; gap: 8px;
-    }
-    .stat-card {
-        background: linear-gradient(145deg, rgba(15,38,66,0.9) 0%, rgba(10,22,40,0.95) 100%);
-        border: 1px solid rgba(100,180,255,0.08); border-radius: 12px; padding: 16px;
-        text-align: center;
-    }
-    .stat-value { font-size: 24px; font-weight: 800; color: #f1f5f9; font-family: 'Inter', sans-serif; }
-    .stat-label { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
-    hr { border: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(100,180,255,0.15), transparent); margin: 16px 0; }
-</style>
-""", unsafe_allow_html=True)
+# ========== 统一导航栏 ==========
+render_navbar("客流分析")
+auto_refresh, refresh_interval = render_sidebar()
 
 # ========== 加载真实数据 ==========
 @st.cache_data(ttl=3600)
@@ -64,19 +42,6 @@ def load_real_data():
     return None
 
 df = load_real_data()
-
-# ========== 页面标题 ==========
-st.markdown("""
-<div style="margin-bottom: 24px;">
-    <div style="display: flex; align-items: center; gap: 12px;">
-        <div style="font-size: 32px;"></div>
-        <div>
-            <div style="font-size: 24px; font-weight: 800; color: #f1f5f9;">多维流量分析</div>
-            <div style="font-size: 13px; color: #64748b;">九寨沟景区真实客流数据 · 时间序列多维度拆解 · 模式识别</div>
-        </div>
-    </div>
-</div>
-""", unsafe_allow_html=True)
 
 if df is None:
     st.warning(" 未找到数据文件，请确保 data/jiuzhaigou_daily.csv 存在")
@@ -484,7 +449,13 @@ st.markdown("""
 <div style="margin-top:20px; padding:16px; background:rgba(15,38,66,0.5); border-radius:12px; 
             border:1px solid rgba(100,180,255,0.08); text-align:center;">
     <div style="font-size:12px; color:#475569;">
-        数据来源：九寨沟景区官网 (jiuzhai.com) · 真实每日进沟人数 · 国内唯一公开5A景区客流数据
+        数据来源: 九寨沟景区官网 (jiuzhai.com) · 真实每日进沟人数 · 国内唯一公开5A景区客流数据
     </div>
 </div>
 """, unsafe_allow_html=True)
+
+# 自动刷新
+if auto_refresh:
+    interval_seconds = int(refresh_interval.replace("s", ""))
+    time.sleep(interval_seconds)
+    st.rerun()

@@ -32,13 +32,30 @@ st.markdown("""
         padding-bottom: 1rem;
     }
     
-    /* 侧边栏 */
+    /* 侧边栏 - 修复颜色太暗 */
     [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #0d1e36 0%, #0a1628 100%);
-        border-right: 1px solid rgba(100, 180, 255, 0.1);
+        background: linear-gradient(180deg, #111d32 0%, #0d1e36 100%) !important;
+        border-right: 1px solid rgba(100, 180, 255, 0.15) !important;
     }
     [data-testid="stSidebar"] .stMarkdown {
-        color: #94a3b8 !important;
+        color: #e2e8f0 !important;
+    }
+    [data-testid="stSidebar"] .stSelectbox label,
+    [data-testid="stSidebar"] .stSlider label,
+    [data-testid="stSidebar"] .stToggle label {
+        color: #e2e8f0 !important;
+    }
+    /* 隐藏默认页面导航 */
+    [data-testid="stSidebarNav"] { display: none !important; }
+    
+    /* 实时数据指示器 */
+    @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(1.2); }
+    }
+    .live-dot {
+        width: 8px; height: 8px; background: #34d399; border-radius: 50%;
+        animation: pulse 2s infinite; display: inline-block;
     }
     
     /* 预警横幅 */
@@ -201,21 +218,52 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ============================================
-# 侧边栏 - 控制面板
+# 侧边栏 - 控制面板 + 中文导航
 # ============================================
 with st.sidebar:
     st.markdown("""
     <div style="text-align: center; margin-bottom: 24px;">
-        <div style="font-size: 28px; margin-bottom: 8px;"></div>
-        <div style="font-size: 16px; font-weight: 700; color: #e2e8f0;">景区客流预测平台</div>
-        <div style="font-size: 11px; color: #64748b; margin-top: 4px;">v2.0 · 九寨沟数据验证</div>
+        <div style="font-size: 18px; font-weight: 700; color: #e2e8f0;">景区客流预测平台</div>
+        <div style="font-size: 11px; color: #64748b; margin-top: 4px;">v2.1 | 九寨沟数据验证</div>
     </div>
     """, unsafe_allow_html=True)
     
     st.markdown("---")
     
+    # 中文页面导航
+    st.markdown("<div style='font-size: 12px; color: #64748b; margin-bottom: 8px; font-weight: 600;'>页面导航</div>", unsafe_allow_html=True)
+    
+    nav_col1, nav_col2 = st.columns(2)
+    with nav_col1:
+        if st.button("首页", use_container_width=True, key="nav_home"):
+            st.rerun()
+    with nav_col2:
+        if st.button("客流分析", use_container_width=True, key="nav_flow"):
+            st.switch_page("pages/flow.py")
+    
+    nav_col3, nav_col4 = st.columns(2)
+    with nav_col3:
+        if st.button("智能预测", use_container_width=True, key="nav_predict"):
+            st.switch_page("pages/predict.py")
+    with nav_col4:
+        if st.button("数据洞察", use_container_width=True, key="nav_scenic"):
+            st.switch_page("pages/scenic.py")
+    
+    st.markdown("---")
+    
+    # 实时刷新控制
+    st.markdown("<div style='font-size: 12px; color: #64748b; margin-bottom: 8px; font-weight: 600;'>实时刷新</div>", unsafe_allow_html=True)
+    
+    auto_refresh = st.toggle("自动刷新数据", value=False, key="auto_refresh")
+    refresh_interval = st.select_slider("刷新间隔", options=["2s", "5s", "10s", "30s"], value="5s", key="refresh_interval")
+    
+    if st.button("立即刷新", use_container_width=True, key="refresh_now"):
+        st.rerun()
+    
+    st.markdown("---")
+    
     # 数据源选择
-    st.markdown("<div style='font-size: 12px; color: #64748b; margin-bottom: 8px; font-weight: 600;'> 数据源配置</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size: 12px; color: #64748b; margin-bottom: 8px; font-weight: 600;'>数据源配置</div>", unsafe_allow_html=True)
     
     data_source = st.selectbox(
         "训练数据源",
@@ -224,7 +272,7 @@ with st.sidebar:
         help="当前基于九寨沟官网每日公开游客数据训练"
     )
     
-    model_status = " 已加载" if is_model_ready() else " 未训练"
+    model_status = "已加载" if is_model_ready() else "未训练"
     st.markdown(f"""
     <div style="margin: 12px 0;">
         <span class="badge badge-green">{model_status}</span>
@@ -235,7 +283,7 @@ with st.sidebar:
     st.markdown("---")
     
     # 预测参数
-    st.markdown("<div style='font-size: 12px; color: #64748b; margin-bottom: 8px; font-weight: 600;'> 预测参数</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size: 12px; color: #64748b; margin-bottom: 8px; font-weight: 600;'>预测参数</div>", unsafe_allow_html=True)
     
     forecast_days = st.slider("预测天数", 3, 14, 7, help="选择未来预测的时间跨度")
     confidence_level = st.select_slider("置信区间", options=["80%", "90%", "95%"], value="90%", help="预测区间的置信度")
@@ -243,7 +291,7 @@ with st.sidebar:
     st.markdown("---")
     
     # 时间范围
-    st.markdown("<div style='font-size: 12px; color: #64748b; margin-bottom: 8px; font-weight: 600;'> 时间范围</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size: 12px; color: #64748b; margin-bottom: 8px; font-weight: 600;'>时间范围</div>", unsafe_allow_html=True)
     
     time_range = st.selectbox(
         "历史数据范围",
@@ -257,12 +305,12 @@ with st.sidebar:
     st.markdown("---")
     
     # 导出
-    st.markdown("<div style='font-size: 12px; color: #64748b; margin-bottom: 8px; font-weight: 600;'> 数据导出</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size: 12px; color: #64748b; margin-bottom: 8px; font-weight: 600;'>数据导出</div>", unsafe_allow_html=True)
     
-    if st.button(" 导出预测报告", use_container_width=True):
+    if st.button("导出预测报告", use_container_width=True):
         st.success("报告生成中...")
     
-    if st.button(" 导出历史数据", use_container_width=True):
+    if st.button("导出历史数据", use_container_width=True):
         st.success("数据准备中...")
     
     st.markdown("---")
@@ -796,3 +844,10 @@ st.markdown("""
     </div>
 </div>
 """, unsafe_allow_html=True)
+
+# ========== 自动刷新 ==========
+if auto_refresh:
+    import time as _time
+    _interval = int(refresh_interval.replace("s", ""))
+    _time.sleep(_interval)
+    st.rerun()
