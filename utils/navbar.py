@@ -70,8 +70,8 @@ def render_navbar(current_page: str = "首页"):
             background: linear-gradient(145deg, rgba(13,30,54,0.95) 0%, rgba(8,18,34,0.98) 100%) !important;
             border: 1px solid rgba(100, 180, 255, 0.12) !important;
             border-radius: 16px !important;
-            padding: 4px 20px 20px 20px !important;
-            margin-bottom: 8px !important;
+            padding: 4px 16px 14px 16px !important;
+            margin-bottom: 6px !important;
         }
         [data-testid="stVerticalBlockBorderWrapper"] > div {
             border: none !important;
@@ -90,8 +90,8 @@ def render_navbar(current_page: str = "首页"):
             font-size: 16px;
             font-weight: 700;
             color: #f1f5f9;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
             border-bottom: 1px solid rgba(100, 180, 255, 0.08);
         }
         

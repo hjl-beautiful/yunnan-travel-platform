@@ -46,7 +46,7 @@ capacity = 41000
 
 # ========== 模型状态 ==========
 st.markdown(f"""
-<div style="margin-bottom:16px; display:flex; align-items:center; gap:12px;">
+<div style="margin-bottom:10px; display:flex; align-items:center; gap:12px;">
     <span class="badge badge-green">{"模型就绪" if model_ready else "演示模式"}</span>
     <span style="font-size:13px; color:#cbd5e1;">XGBoost 时序预测 | 多特征融合 | 7日滚动预测</span>
 </div>
@@ -143,16 +143,16 @@ with col_main:
             fig_main.update_layout(
                 paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
                 font=dict(color="#cbd5e1", size=12),
-                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
-                             font=dict(color="#cbd5e1", size=11), bgcolor="rgba(0,0,0,0)"),
-                margin=dict(l=40, r=40, t=50, b=40), height=380,
+                legend=dict(orientation="h", yanchor="top", y=-0.15, xanchor="center", x=0.5,
+                             font=dict(color="#cbd5e1", size=10), bgcolor="rgba(0,0,0,0.3)"),
+                margin=dict(l=40, r=40, t=10, b=55), height=440,
                 hovermode="x unified",
                 xaxis=dict(showgrid=False, zeroline=False, title="日期", title_font_color="#cbd5e1"),
                 yaxis=dict(showgrid=True, gridcolor="rgba(100,180,255,0.06)", zeroline=False, tickformat=",", title="客流量 (人次)", title_font_color="#cbd5e1"),
             )
             
-            st.markdown('<div style="min-height:380px;">', unsafe_allow_html=True)
-            st.plotly_chart(fig_main, use_container_width=True, height=380, key="forecast_main_chart", config={"displayModeBar": False})
+            st.markdown('<div style="min-height:440px;">', unsafe_allow_html=True)
+            st.plotly_chart(fig_main, use_container_width=True, height=440, key="forecast_main_chart", config={"displayModeBar": False})
             st.markdown('</div>', unsafe_allow_html=True)
             
             # ========== 图表2：日环比 ==========
@@ -175,7 +175,7 @@ with col_main:
                 fig_mom.update_layout(
                     paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
                     font=dict(color="#cbd5e1", size=12),
-                    margin=dict(l=40, r=40, t=10, b=20), height=160,
+                    margin=dict(l=40, r=40, t=5, b=40), height=140,
                     showlegend=False,
                     xaxis=dict(showgrid=False, zeroline=False, title="", title_font_color="#cbd5e1"),
                     yaxis=dict(showgrid=True, gridcolor="rgba(100,180,255,0.06)", zeroline=True, 
@@ -183,11 +183,19 @@ with col_main:
                               range=[-max(3, max_mom*1.1), max(3, max_mom*1.1)], title_font_color="#cbd5e1"),
                 )
                 
-                st.markdown('<div style="min-height:160px;">', unsafe_allow_html=True)
-                st.plotly_chart(fig_mom, use_container_width=True, height=160, key="forecast_mom_chart", config={"displayModeBar": False})
-                st.markdown('</div>', unsafe_allow_html=True)
+                st.plotly_chart(fig_mom, use_container_width=True, height=140, key="forecast_mom_chart", config={"displayModeBar": False})
         else:
             st.warning("数据加载中，请稍候...")
+    
+    with st.container(border=True):
+        st.markdown('<div class="panel-header">技术架构</div>', unsafe_allow_html=True)
+        st.markdown("""
+        <div style="font-size:11px; color:#cbd5e1; line-height:1.7;">
+            <strong style="color:#3b82f6;">XGBoost</strong> 梯度提升决策树，基于40维特征进行时序预测。<br>
+            特征：时间(10)、节假日(5)、滞后(4)、滚动统计(16)、差分(5)。<br>
+            使用 <strong style="color:#8b5cf6;">GridSearchCV</strong> 调参，<strong style="color:#10b981;">TimeSeriesSplit</strong> 防止数据泄露。
+        </div>
+        """, unsafe_allow_html=True)
 
 with col_side:
     with st.container(border=True):
@@ -231,28 +239,6 @@ with col_side:
         else:
             st.info("暂无预测数据")
     
-    # 模型性能摘要
-    with st.container(border=True):
-        st.markdown('<div class="panel-header">模型性能</div>', unsafe_allow_html=True)
-        if metrics:
-            perf_items = [
-                ("R² 决定系数", f"{metrics.get('r2', '—'):.4f}", "越接近1越好"),
-                ("MAE 平均误差", f"{metrics.get('mae', '—'):,.0f}", "人次"),
-                ("MAPE 误差率", f"{metrics.get('mape', '—'):.1f}%", "相对误差"),
-            ]
-            for label, val, unit in perf_items:
-                st.markdown(f"""
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid rgba(100,180,255,0.06);">
-                    <div>
-                        <div style="font-size:11px; color:#cbd5e1;">{label}</div>
-                        <div style="font-size:10px; color:#cbd5e1;">{unit}</div>
-                    </div>
-                    <div style="font-size:16px; font-weight:700; color:#f1f5f9;">{val}</div>
-                </div>
-                """, unsafe_allow_html=True)
-        else:
-            st.info("模型指标加载中")
-    
     # 特征重要性
     with st.container(border=True):
         st.markdown('<div class="panel-header">关键特征</div>', unsafe_allow_html=True)
@@ -275,35 +261,17 @@ with col_side:
                 """, unsafe_allow_html=True)
         else:
             st.info("特征重要性数据将在模型训练后显示")
-
-# ========== 底部：技术架构 + 可迁移性 ==========
-col_tech, col_ref = st.columns([2, 1])
-
-with col_tech:
-    with st.container(border=True):
-        st.markdown('<div class="panel-header">技术架构</div>', unsafe_allow_html=True)
-        st.markdown("""
-        <div style="font-size:11px; color:#cbd5e1; line-height:1.8;">
-            <strong style="color:#3b82f6;">XGBoost</strong> 梯度提升决策树，基于40维特征进行时序预测。<br>
-            特征包括：时间特征(10维)、节假日效应(5维)、滞后特征(4维)、滚动窗口统计(16维)、差分趋势(5维)。<br>
-            使用 <strong style="color:#8b5cf6;">GridSearchCV</strong> 进行超参数调优，<strong style="color:#10b981;">TimeSeriesSplit</strong> 防止数据泄露。
-        </div>
-        """, unsafe_allow_html=True)
-
-with col_ref:
+    
     with st.container(border=True):
         st.markdown('<div class="panel-header">可迁移性</div>', unsafe_allow_html=True)
         st.markdown("""
-        <div style="font-size:11px; color:#cbd5e1; line-height:1.8;">
-            所有特征均为<strong style="color:#06b6d4;">通用维度</strong>（时间、节假日、历史趋势），
-            不依赖景区特有属性。<br>
-            方法可直接迁移至：<br>
-            <span style="color:#3b82f6;">丽江古城</span> ·
-            <span style="color:#8b5cf6;">玉龙雪山</span> ·
-            <span style="color:#10b981;">石林</span> 等云南5A景区。
+        <div style="font-size:11px; color:#cbd5e1; line-height:1.7;">
+            所有特征均为<strong style="color:#06b6d4;">通用维度</strong>（时间、节假日、历史趋势），不依赖景区特有属性。<br>
+            方法可直接迁移至：<strong style="color:#3b82f6;">丽江古城</strong> · <strong style="color:#8b5cf6;">玉龙雪山</strong> · <strong style="color:#10b981;">石林</strong> 等云南5A景区。
         </div>
         """, unsafe_allow_html=True)
 
+# ========== 自动刷新 ==========
 # ========== 自动刷新 ==========
 if auto_refresh:
     interval_seconds = int(refresh_interval.replace("s", ""))
