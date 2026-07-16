@@ -70,7 +70,7 @@ def render_navbar(current_page: str = "首页"):
             background: linear-gradient(145deg, rgba(13,30,54,0.95) 0%, rgba(8,18,34,0.98) 100%) !important;
             border: 1px solid rgba(100, 180, 255, 0.12) !important;
             border-radius: 16px !important;
-            padding: 4px 16px 14px 16px !important;
+            padding: 4px 16px 10px 16px !important;
             margin-bottom: 6px !important;
         }
         [data-testid="stVerticalBlockBorderWrapper"] > div {

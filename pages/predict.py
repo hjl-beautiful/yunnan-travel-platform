@@ -102,9 +102,9 @@ col_main, col_side = st.columns([7, 3])
 with col_main:
     with st.container(border=True):
         st.markdown(f"""
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
             <div class="panel-header" style="margin-bottom:0; padding-bottom:0; border-bottom:none;">7日客流预测</div>
-            <div style="font-size:11px; color:#ef4444; border:1px solid rgba(239,68,68,0.3); padding:3px 10px; border-radius:20px; background:rgba(239,68,68,0.08);">
+            <div style="font-size:11px; color:#ef4444; border:1px solid rgba(239,68,68,0.3); padding:2px 8px; border-radius:20px; background:rgba(239,68,68,0.08);">
                 承载上限 {capacity:,.0f}
             </div>
         </div>
@@ -129,7 +129,7 @@ with col_main:
                 x=forecast_dates, y=forecast_df["预测"],
                 mode="lines+markers", name="AI预测",
                 line=dict(color="#06b6d4", width=3),
-                marker=dict(size=10, color="#06b6d4", line=dict(color="white", width=2)),
+                marker=dict(size=8, color="#06b6d4", line=dict(color="white", width=1.5)),
                 hovertemplate="<b>%{x}</b><br>预测: %{y:,.0f}<extra></extra>"
             ))
             
@@ -150,20 +150,18 @@ with col_main:
             
             fig_main.update_layout(
                 paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-                font=dict(color="#cbd5e1", size=12),
-                legend=dict(orientation="h", yanchor="top", y=-0.15, xanchor="center", x=0.5,
+                font=dict(color="#cbd5e1", size=11),
+                legend=dict(orientation="h", yanchor="top", y=-0.12, xanchor="center", x=0.5,
                              font=dict(color="#cbd5e1", size=10), bgcolor="rgba(0,0,0,0.3)"),
-                margin=dict(l=40, r=40, t=10, b=55), height=440,
+                margin=dict(l=40, r=40, t=5, b=35), height=360,
                 hovermode="x unified",
-                xaxis=dict(showgrid=False, zeroline=False, title="日期", title_font_color="#cbd5e1"),
+                xaxis=dict(showgrid=False, zeroline=False, title="", title_font_color="#cbd5e1"),
                 yaxis=dict(showgrid=True, gridcolor="rgba(100,180,255,0.06)", zeroline=False, tickformat=",",
                            title="客流量 (人次)", title_font_color="#cbd5e1",
                            range=[0, y_max]),
             )
             
-            st.markdown('<div style="min-height:440px;">', unsafe_allow_html=True)
-            st.plotly_chart(fig_main, use_container_width=True, height=440, key="forecast_main_chart", config={"displayModeBar": False})
-            st.markdown('</div>', unsafe_allow_html=True)
+            st.plotly_chart(fig_main, use_container_width=True, height=360, key="forecast_main_chart", config={"displayModeBar": False})
             
             # ========== 图表2：日环比 ==========
             if len(forecast_df) > 1:
@@ -177,15 +175,15 @@ with col_main:
                     x=forecast_dates, y=mom,
                     marker_color=mom_colors, name="日环比",
                     text=[f"{v:+.1f}%" for v in mom],
-                    textposition="outside", textfont=dict(color="#cbd5e1", size=10),
+                    textposition="outside", textfont=dict(color="#cbd5e1", size=9),
                     hovertemplate="<b>%{x}</b><br>环比: %{y:+.1f}%<extra></extra>"
                 ))
                 
                 max_mom = max(abs(min(mom)), abs(max(mom))) if mom else 5
                 fig_mom.update_layout(
                     paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-                    font=dict(color="#cbd5e1", size=12),
-                    margin=dict(l=40, r=40, t=5, b=40), height=140,
+                    font=dict(color="#cbd5e1", size=11),
+                    margin=dict(l=40, r=40, t=5, b=30), height=110,
                     showlegend=False,
                     xaxis=dict(showgrid=False, zeroline=False, title="", title_font_color="#cbd5e1"),
                     yaxis=dict(showgrid=True, gridcolor="rgba(100,180,255,0.06)", zeroline=True, 
@@ -193,14 +191,14 @@ with col_main:
                               range=[-max(3, max_mom*1.1), max(3, max_mom*1.1)], title_font_color="#cbd5e1"),
                 )
                 
-                st.plotly_chart(fig_mom, use_container_width=True, height=140, key="forecast_mom_chart", config={"displayModeBar": False})
+                st.plotly_chart(fig_mom, use_container_width=True, height=110, key="forecast_mom_chart", config={"displayModeBar": False})
         else:
             st.warning("数据加载中，请稍候...")
     
     with st.container(border=True):
-        st.markdown('<div class="panel-header">技术架构</div>', unsafe_allow_html=True)
+        st.markdown('<div class="panel-header" style="margin-bottom:8px;">技术架构</div>', unsafe_allow_html=True)
         st.markdown("""
-        <div style="font-size:11px; color:#cbd5e1; line-height:1.7;">
+        <div style="font-size:12px; color:#cbd5e1; line-height:1.6;">
             <strong style="color:#3b82f6;">XGBoost</strong> 梯度提升决策树，基于40维特征进行时序预测。<br>
             特征：时间(10)、节假日(5)、滞后(4)、滚动统计(16)、差分(5)。<br>
             使用 <strong style="color:#8b5cf6;">GridSearchCV</strong> 调参，<strong style="color:#10b981;">TimeSeriesSplit</strong> 防止数据泄露。
@@ -209,7 +207,7 @@ with col_main:
 
 with col_side:
     with st.container(border=True):
-        st.markdown('<div class="panel-header">7日预测明细</div>', unsafe_allow_html=True)
+        st.markdown('<div class="panel-header" style="margin-bottom:8px;">7日预测明细</div>', unsafe_allow_html=True)
         
         if not forecast_df.empty:
             for _, row in forecast_df.iterrows():
@@ -251,7 +249,7 @@ with col_side:
     
     # 特征重要性
     with st.container(border=True):
-        st.markdown('<div class="panel-header">关键特征</div>', unsafe_allow_html=True)
+        st.markdown('<div class="panel-header" style="margin-bottom:8px;">关键特征</div>', unsafe_allow_html=True)
         
         feat_df = get_feature_importance(8)
         if not feat_df.empty:
@@ -259,7 +257,7 @@ with col_side:
                 pct = row["importance"]
                 bar_width = min(pct, 100) if pct > 0 else 0
                 st.markdown(f"""
-                <div style="margin-bottom:8px;">
+                <div style="margin-bottom:6px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
                         <span style="font-size:11px; color:#cbd5e1;">{row['feature']}</span>
                         <span style="font-size:11px; font-weight:600; color:#e2e8f0;">{pct:.1f}%</span>
@@ -273,9 +271,9 @@ with col_side:
             st.info("特征重要性数据将在模型训练后显示")
     
     with st.container(border=True):
-        st.markdown('<div class="panel-header">可迁移性</div>', unsafe_allow_html=True)
+        st.markdown('<div class="panel-header" style="margin-bottom:8px;">可迁移性</div>', unsafe_allow_html=True)
         st.markdown("""
-        <div style="font-size:11px; color:#cbd5e1; line-height:1.7;">
+        <div style="font-size:12px; color:#cbd5e1; line-height:1.6;">
             所有特征均为<strong style="color:#06b6d4;">通用维度</strong>（时间、节假日、历史趋势），不依赖景区特有属性。<br>
             方法可直接迁移至：<strong style="color:#3b82f6;">丽江古城</strong> · <strong style="color:#8b5cf6;">玉龙雪山</strong> · <strong style="color:#10b981;">石林</strong> 等云南5A景区。
         </div>
