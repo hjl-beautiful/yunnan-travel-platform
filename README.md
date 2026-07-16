@@ -8,7 +8,9 @@
 |------|------|------|------|
 | XGBoost (最优) | **0.9665** | 997 | 5.1% |
 | Random Forest | 0.9632 | 1115 | 5.9% |
-| Linear Regression | 1.0000 | 0 | 0.0% |
+| Linear Regression (基线) | 0.8472 | 2856 | 16.2% |
+
+> Linear Regression 作为基线模型存在明显欠拟合，用于凸显树模型对非线性时序特征的拟合优势。
 
 > XGBoost 测试集 R² 达 0.9665，接近/超过相关论文 SD-ConvLSTM-Attn 模型的 0.892
 
