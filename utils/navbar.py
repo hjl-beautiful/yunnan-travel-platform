@@ -44,6 +44,23 @@ def render_navbar(current_page: str = "首页"):
             padding-bottom: 1rem !important;
         }
         
+        /* 面板卡片 - 深色背景 */
+        .panel-card {
+            background: linear-gradient(145deg, rgba(13,30,54,0.95) 0%, rgba(8,18,34,0.98) 100%) !important;
+            border: 1px solid rgba(100, 180, 255, 0.12) !important;
+            border-radius: 16px !important;
+            padding: 24px !important;
+            margin-bottom: 16px !important;
+        }
+        .panel-header {
+            font-size: 16px;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(100, 180, 255, 0.08);
+        }
+        
         /* 顶部固定标题栏 */
         .top-header {
             background: linear-gradient(90deg, rgba(15,38,66,0.95) 0%, rgba(10,22,40,0.95) 100%);

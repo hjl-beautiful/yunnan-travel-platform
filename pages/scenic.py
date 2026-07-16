@@ -88,7 +88,7 @@ for col, (label, value, sub) in zip([s1, s2, s3, s4, s5, s6], stat_items):
         <div class="stat-card {card_class}">
             <div class="stat-value">{value}</div>
             <div class="stat-label">{label}</div>
-            <div style="font-size:10px; color:#475569; margin-top:4px;">{sub}</div>
+            <div style="font-size:10px; color:#94a3b8; margin-top:4px;">{sub}</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -186,12 +186,12 @@ with col_b:
                 st.markdown(f"""
                 <div style="margin-bottom:10px;">
                     <span style="background:rgba({r},{g},{b},0.15); color:{color}; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600;">{cat_name}</span>
-                    <span style="color:#64748b; font-size:11px; margin-left:6px;">{len(cat_feats)} 个</span>
+                    <span style="color:#94a3b8; font-size:11px; margin-left:6px;">{len(cat_feats)} 个</span>
                 </div>
                 """, unsafe_allow_html=True)
                 feature_tags = " ".join([f'<span style="background:rgba(100,180,255,0.08); color:#94a3b8; padding:2px 8px; border-radius:4px; font-size:10px; margin:2px; display:inline-block;">{f}</span>' for f in cat_feats[:8]])
                 if len(cat_feats) > 8:
-                    feature_tags += f' <span style="color:#64748b; font-size:10px;">+{len(cat_feats)-8}个</span>'
+                    feature_tags += f' <span style="color:#94a3b8; font-size:10px;">+{len(cat_feats)-8}个</span>'
                 st.markdown(f'<div style="margin-bottom:14px; line-height:2;">{feature_tags}</div>', unsafe_allow_html=True)
     else:
         st.info("特征工程数据尚未生成，请先运行 data/clean_data.py")
@@ -315,7 +315,7 @@ with q1:
     <div style="background:rgba(16,185,129,0.05); border:1px solid rgba(16,185,129,0.15); border-radius:12px; padding:20px; text-align:center;">
         <div style="font-size:28px; font-weight:800; color:{color};">{complete_pct:.1f}%</div>
         <div style="font-size:11px; color:#94a3b8; margin-top:4px;">数据完整性</div>
-        <div style="font-size:10px; color:#475569; margin-top:4px;">缺失 {missing_count} 条 / 总计 {len(df)} 条</div>
+        <div style="font-size:10px; color:#94a3b8; margin-top:4px;">缺失 {missing_count} 条 / 总计 {len(df)} 条</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -326,7 +326,7 @@ with q2:
     <div style="background:rgba(16,185,129,0.05); border:1px solid rgba(16,185,129,0.15); border-radius:12px; padding:20px; text-align:center;">
         <div style="font-size:28px; font-weight:800; color:{color2};">{date_continuity:.1f}%</div>
         <div style="font-size:11px; color:#94a3b8; margin-top:4px;">日期连续性</div>
-        <div style="font-size:10px; color:#475569; margin-top:4px;">日期间隔为1天的比例</div>
+        <div style="font-size:10px; color:#94a3b8; margin-top:4px;">日期间隔为1天的比例</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -337,7 +337,7 @@ with q3:
     <div style="background:rgba(16,185,129,0.05); border:1px solid rgba(16,185,129,0.15); border-radius:12px; padding:20px; text-align:center;">
         <div style="font-size:28px; font-weight:800; color:{color3};">{outlier_pct:.1f}%</div>
         <div style="font-size:11px; color:#94a3b8; margin-top:4px;">极端值比例</div>
-        <div style="font-size:10px; color:#475569; margin-top:4px;">超过99%分位 {outlier_count} 条</div>
+        <div style="font-size:10px; color:#94a3b8; margin-top:4px;">超过99%分位 {outlier_count} 条</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -348,7 +348,7 @@ with q4:
     <div style="background:rgba(16,185,129,0.05); border:1px solid rgba(16,185,129,0.15); border-radius:12px; padding:20px; text-align:center;">
         <div style="font-size:28px; font-weight:800; color:{color4};">{months_present}/12</div>
         <div style="font-size:11px; color:#94a3b8; margin-top:4px;">月份覆盖</div>
-        <div style="font-size:10px; color:#475569; margin-top:4px;">12个月中已覆盖 {months_present} 个月</div>
+        <div style="font-size:10px; color:#94a3b8; margin-top:4px;">12个月中已覆盖 {months_present} 个月</div>
     </div>
     """, unsafe_allow_html=True)
 

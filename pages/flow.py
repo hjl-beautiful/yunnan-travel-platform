@@ -83,7 +83,7 @@ for col, (label, value, sub) in zip([s1, s2, s3, s4, s5, s6], stats):
         <div class="stat-card">
             <div class="stat-value">{value}</div>
             <div class="stat-label">{label}</div>
-            <div style="font-size:10px; color:#475569; margin-top:4px;">{sub}</div>
+            <div style="font-size:10px; color:#94a3b8; margin-top:4px;">{sub}</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -251,7 +251,7 @@ with chart_col2:
             <span style="font-size:12px; color:#94a3b8;">{label}</span>
             <div style="text-align:right;">
                 <span style="font-size:15px; font-weight:700; color:#e2e8f0;">{value}</span>
-                <span style="font-size:10px; color:#64748b; margin-left:4px;">{unit}</span>
+                <span style="font-size:10px; color:#94a3b8; margin-left:4px;">{unit}</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -448,7 +448,7 @@ with col_d:
 st.markdown("""
 <div style="margin-top:20px; padding:16px; background:rgba(15,38,66,0.5); border-radius:12px; 
             border:1px solid rgba(100,180,255,0.08); text-align:center;">
-    <div style="font-size:12px; color:#475569;">
+    <div style="font-size:12px; color:#94a3b8;">
         数据来源: 九寨沟景区官网 (jiuzhai.com) · 真实每日进沟人数 · 国内唯一公开5A景区客流数据
     </div>
 </div>

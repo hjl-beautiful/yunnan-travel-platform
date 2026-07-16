@@ -51,8 +51,8 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ========== 模型指标卡片 ==========
-st.markdown('<div class="panel-card">', unsafe_allow_html=True)
-st.markdown('<div class="panel-header">模型性能指标</div>', unsafe_allow_html=True)
+with st.container(border=True):
+    st.markdown('<div class="panel-header">模型性能指标</div>', unsafe_allow_html=True)
 
 if metrics:
     m1, m2, m3, m4, m5 = st.columns(5)
@@ -88,21 +88,20 @@ if metrics:
             <div class="stat-card {'live-card' if auto_refresh else ''}" style="border-top:3px solid {color};">
                 <div class="stat-label">{label}</div>
                 <div style="font-size:28px; font-weight:800; color:{color}; margin:8px 0;">{value}</div>
-                <div style="font-size:10px; color:#475569;">{desc}</div>
+                <div style="font-size:10px; color:#94a3b8;">{desc}</div>
             </div>
             """, unsafe_allow_html=True)
 else:
     st.info("模型尚未训练，显示演示数据。请运行 ml/train_model.py")
-st.markdown('</div>', unsafe_allow_html=True)
 
 # ========== 预测图表 ==========
 col_main, col_side = st.columns([7, 3])
 
 with col_main:
-    st.markdown('<div class="panel-card">', unsafe_allow_html=True)
-    st.markdown('<div class="panel-header">7日客流预测</div>', unsafe_allow_html=True)
-    
-    if not hist_df.empty and not forecast_df.empty:
+    with st.container(border=True):
+        st.markdown('<div class="panel-header">7日客流预测</div>', unsafe_allow_html=True)
+        
+        if not hist_df.empty and not forecast_df.empty:
         last_hist_date = hist_df["日期"].iloc[-1]
         forecast_dates = pd.to_datetime([last_hist_date + timedelta(days=i+1) for i in range(len(forecast_df))])
         
@@ -168,14 +167,12 @@ with col_main:
                           zerolinecolor="rgba(100,180,255,0.1)", title="日环比 (%)", row=2, col=1)
         
         st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
-    
-    st.markdown('</div>', unsafe_allow_html=True)
 
 with col_side:
-    st.markdown('<div class="panel-card">', unsafe_allow_html=True)
-    st.markdown('<div class="panel-header">7日预测明细</div>', unsafe_allow_html=True)
-    
-    capacity = 41000
+    with st.container(border=True):
+        st.markdown('<div class="panel-header">7日预测明细</div>', unsafe_allow_html=True)
+        
+        capacity = 41000
     for _, row in forecast_df.iterrows():
         date_str = row["日期"]
         pred = row["预测"]
@@ -197,11 +194,11 @@ with col_side:
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div>
                     <div style="font-size:14px; font-weight:700; color:#e2e8f0;">{date_str}</div>
-                    <div style="font-size:10px; color:#64748b;">{lower:,.0f} - {upper:,.0f} (90% CI)</div>
+                    <div style="font-size:10px; color:#94a3b8;">{lower:,.0f} - {upper:,.0f} (90% CI)</div>
                 </div>
                 <div style="text-align:right;">
                     <div style="font-size:18px; font-weight:800; color:#06b6d4;">{pred:,.0f}</div>
-                    <div style="font-size:10px; color:#64748b;">载客率 {load_rate:.1f}%</div>
+                    <div style="font-size:10px; color:#94a3b8;">载客率 {load_rate:.1f}%</div>
                 </div>
             </div>
             <div style="margin-top:4px;">{badge}</div>
@@ -211,32 +208,26 @@ with col_side:
         </div>
         """, unsafe_allow_html=True)
     
-    st.markdown('</div>', unsafe_allow_html=True)
-    
     # 特征重要性
-    st.markdown('<div class="panel-card">', unsafe_allow_html=True)
-    st.markdown('<div class="panel-header">关键特征</div>', unsafe_allow_html=True)
-    
-    feat_df = get_feature_importance(8)
-    if not feat_df.empty:
-        for _, row in feat_df.iterrows():
-            pct = row["importance"]
-            bar_width = min(pct / 2, 100) if pct > 0 else 0
-            st.markdown(f"""
-            <div style="margin-bottom:8px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
-                    <span style="font-size:11px; color:#94a3b8;">{row['feature']}</span>
-                    <span style="font-size:11px; font-weight:600; color:#e2e8f0;">{pct:.1f}%</span>
+    with st.container(border=True):
+        st.markdown('<div class="panel-header">关键特征</div>', unsafe_allow_html=True)
+        
+        feat_df = get_feature_importance(8)
+        if not feat_df.empty:
+            for _, row in feat_df.iterrows():
+                pct = row["importance"]
+                bar_width = min(pct / 2, 100) if pct > 0 else 0
+                st.markdown(f"""
+                <div style="margin-bottom:8px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
+                        <span style="font-size:11px; color:#94a3b8;">{row['feature']}</span>
+                        <span style="font-size:11px; font-weight:600; color:#e2e8f0;">{pct:.1f}%</span>
+                    </div>
+                    <div style="height:4px; background:rgba(100,180,255,0.1); border-radius:2px; overflow:hidden;">
+                        <div style="height:100%; width:{bar_width}%; background:linear-gradient(90deg, #3b82f6, #06b6d4); border-radius:2px;"></div>
+                    </div>
                 </div>
-                <div style="height:4px; background:rgba(100,180,255,0.1); border-radius:2px; overflow:hidden;">
-                    <div style="height:100%; width:{bar_width}%; background:linear-gradient(90deg, #3b82f6, #06b6d4); border-radius:2px;"></div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-
-st.markdown("<hr>", unsafe_allow_html=True)
+                """, unsafe_allow_html=True)
 
 # ========== 底部：技术架构 + 可迁移性 ==========
 col_tech, col_ref = st.columns([2, 1])
