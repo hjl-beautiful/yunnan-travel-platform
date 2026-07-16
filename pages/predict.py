@@ -107,8 +107,11 @@ with col_main:
             last_hist_date = hist_df["日期"].iloc[-1]
             forecast_dates = pd.to_datetime([last_hist_date + timedelta(days=i+1) for i in range(len(forecast_df))])
             
-            fig = make_subplots(rows=2, cols=1, shared_xaxes=True,
-                                 vertical_spacing=0.06, row_heights=[0.72, 0.28])
+            fig = make_subplots(
+                rows=2, cols=1, shared_xaxes=True,
+                vertical_spacing=0.14,
+                subplot_titles=("", "")
+            )
             
             fig.add_trace(go.Scatter(
                 x=hist_df["日期"], y=hist_df["客流量"],
@@ -157,7 +160,7 @@ with col_main:
                 font=dict(color="#cbd5e1", size=12),
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
                              font=dict(color="#cbd5e1", size=11), bgcolor="rgba(0,0,0,0)"),
-                margin=dict(l=40, r=40, t=10, b=20), height=460,
+                margin=dict(l=40, r=40, t=50, b=20), height=520,
                 hovermode="x unified",
             )
             fig.update_xaxes(showgrid=False, zeroline=False, row=1, col=1)
@@ -169,7 +172,9 @@ with col_main:
                               zerolinecolor="rgba(100,180,255,0.2)", title="日环比 (%)", 
                               range=[-max(2, max_mom*1.1), max(2, max_mom*1.1)], row=2, col=1)
             
-            st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+            st.markdown('<div style="min-height:520px;">', unsafe_allow_html=True)
+            st.plotly_chart(fig, use_container_width=True, height=520, key="forecast_main_chart", config={"displayModeBar": False})
+            st.markdown('</div>', unsafe_allow_html=True)
         else:
             st.warning("数据加载中，请稍候...")
 
