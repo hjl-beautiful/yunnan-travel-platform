@@ -361,7 +361,7 @@ with col_side:
         st.markdown("""
         <div style="font-size:12px; color:#cbd5e1; line-height:1.6;">
             所有特征均为<strong style="color:#06b6d4;">通用维度</strong>（时间、节假日、历史趋势），不依赖景区特有属性。<br>
-            方法可直接迁移至：<strong style="color:#3b82f6;">丽江古城</strong> · <strong style="color:#8b5cf6;">玉龙雪山</strong> · <strong style="color:#10b981;">石林</strong> 等云南5A景区。
+            方法可直接迁移至：<strong style="color:#3b82f6;">黄山</strong> · <strong style="color:#8b5cf6;">泰山</strong> · <strong style="color:#10b981;">张家界</strong> 等全国同类 5A 景区。
         </div>
         """, unsafe_allow_html=True)
 
