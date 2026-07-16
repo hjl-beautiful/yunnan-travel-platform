@@ -161,7 +161,8 @@ with col_main:
                            range=[0, y_max]),
             )
             
-            st.plotly_chart(fig_main, use_container_width=True, height=360, key="forecast_main_chart", config={"displayModeBar": False})
+            
+            st.markdown('<div style="height:16px;"></div>', unsafe_allow_html=True)
             
             # ========== 图表2：日环比 ==========
             if len(forecast_df) > 1:
@@ -204,6 +205,50 @@ with col_main:
             使用 <strong style="color:#8b5cf6;">GridSearchCV</strong> 调参，<strong style="color:#10b981;">TimeSeriesSplit</strong> 防止数据泄露。
         </div>
         """, unsafe_allow_html=True)
+    
+    with st.container(border=True):
+        st.markdown('<div class="panel-header" style="margin-bottom:10px;">关键结论与风险提示</div>', unsafe_allow_html=True)
+        if not forecast_df.empty:
+            peak = forecast_df["预测"].max()
+            peak_date = forecast_df.loc[forecast_df["预测"].idxmax(), "日期"]
+            avg_forecast = forecast_df["预测"].mean()
+            warn_days = int((forecast_df["预测"] > capacity * 0.7).sum())
+            high_days = int((forecast_df["预测"] > capacity * 0.9).sum())
+            mom_vals = forecast_df["预测"].pct_change().dropna() * 100
+            trend_text = "持续上升" if mom_vals.mean() > 0.5 else ("持续下降" if mom_vals.mean() < -0.5 else "相对平稳")
+            trend_color = "#34d399" if mom_vals.mean() > 0.5 else ("#f87171" if mom_vals.mean() < -0.5 else "#fbbf24")
+            
+            st.markdown(f"""
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+                <div style="background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.15); border-radius:8px; padding:10px;">
+                    <div style="font-size:11px; color:#cbd5e1;">预测峰值</div>
+                    <div style="font-size:16px; font-weight:700; color:#e2e8f0;">{peak:,.0f}</div>
+                    <div style="font-size:10px; color:#cbd5e1;">{peak_date}</div>
+                </div>
+                <div style="background:rgba(6,182,212,0.08); border:1px solid rgba(6,182,212,0.15); border-radius:8px; padding:10px;">
+                    <div style="font-size:11px; color:#cbd5e1;">7日平均</div>
+                    <div style="font-size:16px; font-weight:700; color:#e2e8f0;">{avg_forecast:,.0f}</div>
+                    <div style="font-size:10px; color:#cbd5e1;">人次/日</div>
+                </div>
+                <div style="background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.15); border-radius:8px; padding:10px;">
+                    <div style="font-size:11px; color:#cbd5e1;">预警/高负荷</div>
+                    <div style="font-size:16px; font-weight:700; color:#e2e8f0;">{warn_days}/{high_days}</div>
+                    <div style="font-size:10px; color:#cbd5e1;">天</div>
+                </div>
+                <div style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.15); border-radius:8px; padding:10px;">
+                    <div style="font-size:11px; color:#cbd5e1;">整体趋势</div>
+                    <div style="font-size:16px; font-weight:700; color:{trend_color};">{trend_text}</div>
+                    <div style="font-size:10px; color:#cbd5e1;">日均环比 {mom_vals.mean():+.1f}%</div>
+                </div>
+            </div>
+            <div style="font-size:12px; color:#cbd5e1; line-height:1.6;">
+                • 未来7日预计有 <strong style="color:#f59e0b;">{warn_days} 天</strong> 达到预警阈值，需提前安排运力与人员。<br>
+                • 峰值预计出现在 <strong style="color:#06b6d4;">{peak_date}</strong>，当日客流 {peak:,.0f} 人次，建议重点监控。<br>
+                • 预测趋势 <strong style="color:{trend_color};">{trend_text}</strong>，可参考建议调整运营策略。
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.info("暂无预测数据")
 
 with col_side:
     with st.container(border=True):
