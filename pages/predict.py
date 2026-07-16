@@ -57,7 +57,7 @@ with st.container(border=True):
     st.markdown('<div class="panel-header">模型性能指标</div>', unsafe_allow_html=True)
     
     if metrics:
-        m1, m2, m3, m4, m5 = st.columns(5)
+        m1, m2, m3, m4 = st.columns(4)
         
         # 动态浮动指标
         r2_val = metrics['r2']
@@ -81,10 +81,9 @@ with st.container(border=True):
             ("MAE 平均误差", f"{mae_display:,.0f}", "预测偏差均值", "#10b981"),
             ("RMSE 均方根误差", f"{rmse_display:,.0f}", "大误差惩罚", "#8b5cf6"),
             ("MAPE 误差率", f"{mape_display:.1f}%", "相对误差比例", "#f59e0b"),
-            ("对比论文", "超越", "MDPI 2026 R²=0.892", "#06b6d4"),
         ]
         
-        for col, (label, value, desc, color) in zip([m1, m2, m3, m4, m5], metric_items):
+        for col, (label, value, desc, color) in zip([m1, m2, m3, m4], metric_items):
             with col:
                 st.markdown(f"""
                 <div class="stat-card {'live-card' if auto_refresh else ''}" style="border-top:3px solid {color};">

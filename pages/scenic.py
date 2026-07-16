@@ -224,11 +224,9 @@ with col_d:
                 """, unsafe_allow_html=True)
             st.markdown("</tbody></table>", unsafe_allow_html=True)
             st.markdown("""
-            <div style="margin-top:16px; padding:12px; background:rgba(59,130,246,0.05); border-radius:8px; border:1px solid rgba(59,130,246,0.1);">
-                <div style="font-size:12px; font-weight:700; color:#3b82f6; margin-bottom:4px;">参考文献对比</div>
-                <div style="font-size:11px; color:#cbd5e1; line-height:1.6;">
-                    Cheng, J. et al. (2026). SD-ConvLSTM-Attn: A Hybrid Deep Learning Model for Scenic Spot Tourist Flow Prediction.
-                    <em>MDPI Sustainability</em>, 18(14), 7099. -- <strong style="color:#10b981;">R² = 0.892</strong>
+            <div style="margin-top:12px; padding:10px; background:rgba(16,185,129,0.05); border-radius:6px; border:1px solid rgba(16,185,129,0.1);">
+                <div style="font-size:11px; color:#cbd5e1; line-height:1.5;">
+                    Linear Regression 仅使用 <code style="background:rgba(100,180,255,0.1); padding:1px 4px; border-radius:3px;">visitors_lag_1</code> 作为朴素时序基线，避免差分/滚动特征线性重构目标变量带来的虚假完美指标。
                 </div>
             </div>
             """, unsafe_allow_html=True)
