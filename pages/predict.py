@@ -48,7 +48,7 @@ capacity = 41000
 st.markdown(f"""
 <div style="margin-bottom:16px; display:flex; align-items:center; gap:12px;">
     <span class="badge badge-green">{"模型就绪" if model_ready else "演示模式"}</span>
-    <span style="font-size:13px; color:#94a3b8;">XGBoost 时序预测 | 多特征融合 | 7日滚动预测</span>
+    <span style="font-size:13px; color:#cbd5e1;">XGBoost 时序预测 | 多特征融合 | 7日滚动预测</span>
 </div>
 """, unsafe_allow_html=True)
 
@@ -90,7 +90,7 @@ with st.container(border=True):
                 <div class="stat-card {'live-card' if auto_refresh else ''}" style="border-top:3px solid {color};">
                     <div class="stat-label">{label}</div>
                     <div style="font-size:28px; font-weight:800; color:{color}; margin:8px 0;">{value}</div>
-                    <div style="font-size:10px; color:#94a3b8;">{desc}</div>
+                    <div style="font-size:10px; color:#cbd5e1;">{desc}</div>
                 </div>
                 """, unsafe_allow_html=True)
     else:
@@ -148,24 +148,26 @@ with col_main:
                     x=forecast_dates, y=mom,
                     marker_color=mom_colors, name="日环比",
                     text=[f"{v:+.1f}%" for v in mom],
-                    textposition="outside", textfont=dict(color="#94a3b8", size=10),
+                    textposition="outside", textfont=dict(color="#cbd5e1", size=10),
                     hovertemplate="<b>%{x}</b><br>环比: %{y:+.1f}%<extra></extra>"
                 ), row=2, col=1)
             
             fig.update_layout(
                 paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-                font=dict(color="#94a3b8", size=12),
+                font=dict(color="#cbd5e1", size=12),
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
-                             font=dict(color="#94a3b8", size=11), bgcolor="rgba(0,0,0,0)"),
-                margin=dict(l=40, r=40, t=10, b=20), height=560,
+                             font=dict(color="#cbd5e1", size=11), bgcolor="rgba(0,0,0,0)"),
+                margin=dict(l=40, r=40, t=10, b=20), height=460,
                 hovermode="x unified",
             )
             fig.update_xaxes(showgrid=False, zeroline=False, row=1, col=1)
             fig.update_yaxes(showgrid=True, gridcolor="rgba(100,180,255,0.06)", zeroline=False, tickformat=",", 
                               title="客流量 (人次)", row=1, col=1)
             fig.update_xaxes(showgrid=False, row=2, col=1)
+            max_mom = max(abs(min(mom)), abs(max(mom))) if mom else 5
             fig.update_yaxes(showgrid=True, gridcolor="rgba(100,180,255,0.06)", zeroline=True, 
-                              zerolinecolor="rgba(100,180,255,0.1)", title="日环比 (%)", row=2, col=1)
+                              zerolinecolor="rgba(100,180,255,0.2)", title="日环比 (%)", 
+                              range=[-max(2, max_mom*1.1), max(2, max_mom*1.1)], row=2, col=1)
             
             st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
         else:
@@ -197,11 +199,11 @@ with col_side:
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <div>
                             <div style="font-size:14px; font-weight:700; color:#e2e8f0;">{date_str}</div>
-                            <div style="font-size:10px; color:#94a3b8;">{lower:,.0f} - {upper:,.0f} (90% CI)</div>
+                            <div style="font-size:10px; color:#cbd5e1;">{lower:,.0f} - {upper:,.0f} (90% CI)</div>
                         </div>
                         <div style="text-align:right;">
                             <div style="font-size:18px; font-weight:800; color:#06b6d4;">{pred:,.0f}</div>
-                            <div style="font-size:10px; color:#94a3b8;">载客率 {load_rate:.1f}%</div>
+                            <div style="font-size:10px; color:#cbd5e1;">载客率 {load_rate:.1f}%</div>
                         </div>
                     </div>
                     <div style="margin-top:4px;">{badge}</div>
@@ -213,6 +215,28 @@ with col_side:
         else:
             st.info("暂无预测数据")
     
+    # 模型性能摘要
+    with st.container(border=True):
+        st.markdown('<div class="panel-header">模型性能</div>', unsafe_allow_html=True)
+        if metrics:
+            perf_items = [
+                ("R² 决定系数", f"{metrics.get('r2', '—'):.4f}", "越接近1越好"),
+                ("MAE 平均误差", f"{metrics.get('mae', '—'):,.0f}", "人次"),
+                ("MAPE 误差率", f"{metrics.get('mape', '—'):.1f}%", "相对误差"),
+            ]
+            for label, val, unit in perf_items:
+                st.markdown(f"""
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid rgba(100,180,255,0.06);">
+                    <div>
+                        <div style="font-size:11px; color:#cbd5e1;">{label}</div>
+                        <div style="font-size:10px; color:#cbd5e1;">{unit}</div>
+                    </div>
+                    <div style="font-size:16px; font-weight:700; color:#f1f5f9;">{val}</div>
+                </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.info("模型指标加载中")
+    
     # 特征重要性
     with st.container(border=True):
         st.markdown('<div class="panel-header">关键特征</div>', unsafe_allow_html=True)
@@ -221,11 +245,11 @@ with col_side:
         if not feat_df.empty:
             for _, row in feat_df.iterrows():
                 pct = row["importance"]
-                bar_width = min(pct / 2, 100) if pct > 0 else 0
+                bar_width = min(pct, 100) if pct > 0 else 0
                 st.markdown(f"""
                 <div style="margin-bottom:8px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
-                        <span style="font-size:11px; color:#94a3b8;">{row['feature']}</span>
+                        <span style="font-size:11px; color:#cbd5e1;">{row['feature']}</span>
                         <span style="font-size:11px; font-weight:600; color:#e2e8f0;">{pct:.1f}%</span>
                     </div>
                     <div style="height:4px; background:rgba(100,180,255,0.1); border-radius:2px; overflow:hidden;">
@@ -240,22 +264,21 @@ with col_side:
 col_tech, col_ref = st.columns([2, 1])
 
 with col_tech:
-    st.markdown("""
-    <div style="padding:20px; background:linear-gradient(145deg, rgba(13,30,54,0.95) 0%, rgba(8,18,34,0.98) 100%); border-radius:12px; border:1px solid rgba(100,180,255,0.12);">
-        <div style="font-size:13px; font-weight:700; color:#e2e8f0; margin-bottom:10px;">技术架构</div>
-        <div style="font-size:11px; color:#94a3b8; line-height:1.8;">
+    with st.container(border=True):
+        st.markdown('<div class="panel-header">技术架构</div>', unsafe_allow_html=True)
+        st.markdown("""
+        <div style="font-size:11px; color:#cbd5e1; line-height:1.8;">
             <strong style="color:#3b82f6;">XGBoost</strong> 梯度提升决策树，基于40维特征进行时序预测。<br>
             特征包括：时间特征(10维)、节假日效应(5维)、滞后特征(4维)、滚动窗口统计(16维)、差分趋势(5维)。<br>
             使用 <strong style="color:#8b5cf6;">GridSearchCV</strong> 进行超参数调优，<strong style="color:#10b981;">TimeSeriesSplit</strong> 防止数据泄露。
         </div>
-    </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
 with col_ref:
-    st.markdown("""
-    <div style="padding:20px; background:linear-gradient(145deg, rgba(13,30,54,0.95) 0%, rgba(8,18,34,0.98) 100%); border-radius:12px; border:1px solid rgba(100,180,255,0.12);">
-        <div style="font-size:13px; font-weight:700; color:#e2e8f0; margin-bottom:10px;">可迁移性</div>
-        <div style="font-size:11px; color:#94a3b8; line-height:1.8;">
+    with st.container(border=True):
+        st.markdown('<div class="panel-header">可迁移性</div>', unsafe_allow_html=True)
+        st.markdown("""
+        <div style="font-size:11px; color:#cbd5e1; line-height:1.8;">
             所有特征均为<strong style="color:#06b6d4;">通用维度</strong>（时间、节假日、历史趋势），
             不依赖景区特有属性。<br>
             方法可直接迁移至：<br>
@@ -263,8 +286,7 @@ with col_ref:
             <span style="color:#8b5cf6;">玉龙雪山</span> ·
             <span style="color:#10b981;">石林</span> 等云南5A景区。
         </div>
-    </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
 # ========== 自动刷新 ==========
 if auto_refresh:

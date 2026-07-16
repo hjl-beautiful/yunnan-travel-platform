@@ -30,18 +30,36 @@ def render_navbar(current_page: str = "首页"):
             padding-bottom: 1rem !important;
         }
         
+        /* 全局文字颜色提升可读性 */
+        .main .stMarkdown p, .main .stMarkdown li, .main .stMarkdown div {
+            color: #e2e8f0;
+        }
+        .main [data-testid="stExpander"] > div:first-child {
+            color: #e2e8f0 !important;
+        }
+        .main label, .main .stSelectbox label, .main .stSlider label, .main .stToggle label {
+            color: #e2e8f0 !important;
+        }
+        
         /* 修复侧边栏背景 - 更亮更清晰 */
         [data-testid="stSidebar"] {
             background: linear-gradient(180deg, #111d32 0%, #0d1e36 100%) !important;
             border-right: 1px solid rgba(100, 180, 255, 0.15) !important;
         }
+        /* Streamlit 控件标签 - 强制可见 */
         [data-testid="stSidebar"] .stMarkdown {
             color: #e2e8f0 !important;
         }
         [data-testid="stSidebar"] .stSelectbox label,
         [data-testid="stSidebar"] .stSlider label,
-        [data-testid="stSidebar"] .stToggle label {
+        [data-testid="stSidebar"] .stToggle label,
+        [data-testid="stSidebar"] .stCheckbox label,
+        [data-testid="stSidebar"] .stRadio label {
             color: #e2e8f0 !important;
+            font-weight: 500 !important;
+        }
+        [data-testid="stSidebar"] .stSlider [data-testid="stTickBar"] {
+            color: #94a3b8 !important;
         }
         
         /* 隐藏 Streamlit 默认页面导航 */
@@ -53,7 +71,7 @@ def render_navbar(current_page: str = "首页"):
             border: 1px solid rgba(100, 180, 255, 0.12) !important;
             border-radius: 16px !important;
             padding: 4px 20px 20px 20px !important;
-            margin-bottom: 16px !important;
+            margin-bottom: 12px !important;
         }
         [data-testid="stVerticalBlockBorderWrapper"] > div {
             border: none !important;
@@ -66,7 +84,7 @@ def render_navbar(current_page: str = "首页"):
             border: 1px solid rgba(100, 180, 255, 0.12) !important;
             border-radius: 16px !important;
             padding: 24px !important;
-            margin-bottom: 16px !important;
+            margin-bottom: 12px !important;
         }
         .panel-header {
             font-size: 16px;
@@ -93,7 +111,7 @@ def render_navbar(current_page: str = "首页"):
         }
         .stat-label {
             font-size: 11px;
-            color: #94a3b8;
+            color: #cbd5e1;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-top: 4px;
@@ -117,7 +135,7 @@ def render_navbar(current_page: str = "首页"):
         }
         .top-header-subtitle {
             font-size: 12px;
-            color: #94a3b8;
+            color: #cbd5e1;
         }
         .top-header-nav {
             display: flex;
@@ -128,14 +146,14 @@ def render_navbar(current_page: str = "首页"):
             border-radius: 6px;
             font-size: 13px;
             font-weight: 600;
-            color: #94a3b8;
+            color: #cbd5e1;
             background: rgba(100, 180, 255, 0.05);
             border: 1px solid rgba(100, 180, 255, 0.08);
             text-decoration: none;
             transition: all 0.2s;
         }
         .nav-link:hover {
-            color: #e2e8f0;
+            color: #f1f5f9;
             background: rgba(100, 180, 255, 0.1);
             border-color: rgba(100, 180, 255, 0.2);
         }
@@ -198,6 +216,91 @@ def render_navbar(current_page: str = "首页"):
             border: 1px solid rgba(239, 68, 68, 0.3);
         }
         
+        /* 预警横幅 */
+        .alert-banner {
+            background: linear-gradient(145deg, rgba(16,185,129,0.08) 0%, rgba(16,185,129,0.04) 100%);
+            border: 1px solid rgba(16,185,129,0.15);
+            border-radius: 12px;
+            padding: 14px 20px;
+            margin-bottom: 16px;
+        }
+        .alert-banner.warning {
+            background: linear-gradient(145deg, rgba(245,158,11,0.08) 0%, rgba(245,158,11,0.04) 100%);
+            border-color: rgba(245,158,11,0.15);
+        }
+        .alert-banner.danger {
+            background: linear-gradient(145deg, rgba(239,68,68,0.08) 0%, rgba(239,68,68,0.04) 100%);
+            border-color: rgba(239,68,68,0.15);
+        }
+        
+        /* KPI 卡片 */
+        .kpi-card {
+            background: linear-gradient(145deg, rgba(15,38,66,0.9) 0%, rgba(10,22,40,0.95) 100%);
+            border: 1px solid rgba(100,180,255,0.08);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+        .kpi-card.warning {
+            border-color: rgba(245,158,11,0.3);
+            background: linear-gradient(145deg, rgba(245,158,11,0.08) 0%, rgba(10,22,40,0.95) 100%);
+        }
+        .kpi-card.danger {
+            border-color: rgba(239,68,68,0.3);
+            background: linear-gradient(145deg, rgba(239,68,68,0.08) 0%, rgba(10,22,40,0.95) 100%);
+        }
+        .kpi-label {
+            font-size: 11px;
+            color: #cbd5e1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .kpi-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: #f1f5f9;
+            margin: 8px 0;
+            font-family: 'Inter', sans-serif;
+        }
+        .kpi-delta {
+            font-size: 12px;
+            font-weight: 600;
+            color: #94a3b8;
+        }
+        .kpi-delta.up { color: #34d399; }
+        .kpi-delta.down { color: #f87171; }
+        
+        /* 洞察卡片 */
+        .insight-card {
+            background: linear-gradient(145deg, rgba(59,130,246,0.05) 0%, rgba(8,18,34,0.3) 100%);
+            border: 1px solid rgba(59,130,246,0.1);
+            border-left: 3px solid #3b82f6;
+            border-radius: 0 10px 10px 0;
+            padding: 12px 16px;
+            margin-bottom: 10px;
+        }
+        .insight-card.warning {
+            background: linear-gradient(145deg, rgba(245,158,11,0.05) 0%, rgba(8,18,34,0.3) 100%);
+            border-color: rgba(245,158,11,0.15);
+            border-left-color: #f59e0b;
+        }
+        .insight-card.danger {
+            background: linear-gradient(145deg, rgba(239,68,68,0.05) 0%, rgba(8,18,34,0.3) 100%);
+            border-color: rgba(239,68,68,0.15);
+            border-left-color: #ef4444;
+        }
+        .insight-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-bottom: 4px;
+        }
+        .insight-text {
+            font-size: 11px;
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
+        
         /* 隐藏默认元素 */
         footer { display: none !important; }
         header { display: none !important; }
@@ -238,7 +341,7 @@ def render_navbar(current_page: str = "首页"):
             <div class="top-header-nav">
                 {nav_html}
             </div>
-            <div style="font-size:11px; color:#94a3b8;">{current_time}</div>
+            <div style="font-size:11px; color:#cbd5e1;">{current_time}</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -250,7 +353,7 @@ def render_sidebar():
         st.markdown("""
         <div style="text-align:center; margin-bottom:20px;">
             <div style="font-size:18px; font-weight:700; color:#e2e8f0;">景区客流预测平台</div>
-            <div style="font-size:11px; color:#94a3b8; margin-top:4px;">v2.2 | 九寨沟数据验证</div>
+            <div style="font-size:11px; color:#cbd5e1; margin-top:4px;">v2.2 | 九寨沟数据验证</div>
         </div>
         """, unsafe_allow_html=True)
         
@@ -281,7 +384,7 @@ def render_sidebar():
                 st.switch_page("pages/decision.py")
         with cols3[1]:
             if st.button("API文档", use_container_width=True, key="nav_api"):
-                st.markdown("<div style='font-size:10px; color:#94a3b8;'>本地运行: python -m api.main</div>", unsafe_allow_html=True)
+                st.markdown("<div style='font-size:10px; color:#cbd5e1;'>本地运行: python -m api.main</div>", unsafe_allow_html=True)
         
         st.markdown("---")
         
@@ -298,7 +401,7 @@ def render_sidebar():
         
         # 数据源信息
         st.markdown("""
-        <div style="font-size:11px; color:#94a3b8; text-align:center; margin-top:20px;">
+        <div style="font-size:11px; color:#cbd5e1; text-align:center; margin-top:20px;">
             <div>数据来源: jiuzhai.com</div>
             <div>模型: XGBoost v2.0</div>
             <div style="margin-top:8px; color:#e2e8f0;">2026 景区客流预测平台</div>

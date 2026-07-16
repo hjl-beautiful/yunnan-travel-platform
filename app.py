@@ -20,7 +20,7 @@ forecast_df = predict_next_7_days()
 
 # 数据加载状态
 if not model_ready:
-    st.warning("模型文件未找到，当前展示模拟数据。请运行 ml/train_model.py 训练模型。", icon="⚠️")
+    st.warning("模型文件未找到，当前展示模拟数据。请运行 ml/train_model.py 训练模型。")
 
 # 数据校验
 if hist_df.empty:
@@ -54,21 +54,21 @@ if warning_level == "danger":
     st.markdown("""
     <div class="alert-banner">
         <div style="font-weight: 700; color: #f87171; font-size: 14px;">红色预警：当前客流接近承载上限</div>
-        <div style="font-size: 12px; color: #94a3b8;">建议立即启动限流措施，增派安保人员，并通过广播引导游客错峰游览</div>
+        <div style="font-size: 12px; color: #cbd5e1;">建议立即启动限流措施，增派安保人员，并通过广播引导游客错峰游览</div>
     </div>
     """, unsafe_allow_html=True)
 elif warning_level == "warning":
     st.markdown("""
     <div class="alert-banner warning">
         <div style="font-weight: 700; color: #fbbf24; font-size: 14px;">黄色预警：客流处于较高水平</div>
-        <div style="font-size: 12px; color: #94a3b8;">建议密切关注重点区域人流密度，提前做好疏导准备</div>
+        <div style="font-size: 12px; color: #cbd5e1;">建议密切关注重点区域人流密度，提前做好疏导准备</div>
     </div>
     """, unsafe_allow_html=True)
 else:
     st.markdown("""
     <div class="alert-banner normal">
         <div style="font-weight: 700; color: #34d399; font-size: 14px;">运营正常：客流处于安全区间</div>
-        <div style="font-size: 12px; color: #94a3b8;">当前客流平稳，建议维持现有运营策略</div>
+        <div style="font-size: 12px; color: #cbd5e1;">当前客流平稳，建议维持现有运营策略</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -108,7 +108,7 @@ for i, (kpi_id, value, label, delta, delta_val, unit) in enumerate(kpi_data):
         st.markdown(f"""
         <div class="kpi-card {card_class}">
             <div class="kpi-label">{label}</div>
-            <div class="kpi-value">{value}<span style="font-size:14px; color:#94a3b8; margin-left:4px;">{unit}</span></div>
+            <div class="kpi-value">{value}<span style="font-size:14px; color:#cbd5e1; margin-left:4px;">{unit}</span></div>
             {delta_html}
         </div>
         """, unsafe_allow_html=True)
@@ -153,11 +153,11 @@ with chart_col1:
             )
             
             fig.update_layout(
-                paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#94a3b8", size=12),
-                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(color="#94a3b8", size=11), bgcolor="rgba(0,0,0,0)"),
+                paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#cbd5e1", size=12),
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(color="#cbd5e1", size=11), bgcolor="rgba(0,0,0,0)"),
                 margin=dict(l=40, r=40, t=60, b=40), height=480, hovermode="x unified", showlegend=True,
-                xaxis=dict(showgrid=False, zeroline=False, title="日期", title_font_color="#94a3b8"),
-                yaxis=dict(showgrid=True, gridcolor="rgba(100,180,255,0.06)", zeroline=False, tickformat=",", title="客流量（人次）", title_font_color="#94a3b8"),
+                xaxis=dict(showgrid=False, zeroline=False, title="日期", title_font_color="#cbd5e1"),
+                yaxis=dict(showgrid=True, gridcolor="rgba(100,180,255,0.06)", zeroline=False, tickformat=",", title="客流量（人次）", title_font_color="#cbd5e1"),
             )
             
             st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False, "responsive": True})
@@ -183,7 +183,7 @@ with chart_col2:
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(100,180,255,0.06);">
                     <div>
                         <div style="font-size:13px; font-weight:600; color:#e2e8f0;">{date_str}</div>
-                        <div style="font-size:11px; color:#94a3b8;">{lower:,.0f} - {upper:,.0f}</div>
+                        <div style="font-size:11px; color:#cbd5e1;">{lower:,.0f} - {upper:,.0f}</div>
                     </div>
                     <div style="text-align:right;">
                         <div style="font-size:16px; font-weight:700; color:#06b6d4;">{pred:,.0f}</div>
@@ -205,8 +205,8 @@ with chart_col2:
                 st.markdown(f"""
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(100,180,255,0.06);">
                     <div>
-                        <div style="font-size:12px; color:#94a3b8;">{label}</div>
-                        <div style="font-size:11px; color:#94a3b8;">{desc}</div>
+                        <div style="font-size:12px; color:#cbd5e1;">{label}</div>
+                        <div style="font-size:11px; color:#cbd5e1;">{desc}</div>
                     </div>
                     <div style="font-size:16px; font-weight:700; color:#f1f5f9;">{val}</div>
                 </div>
@@ -224,13 +224,13 @@ with feat_col:
             fig.add_trace(go.Bar(
                 y=top_feat["feature"], x=top_feat["importance"], orientation="h",
                 marker=dict(color=top_feat["importance"], colorscale=[[0, "#3b82f6"], [1, "#06b6d4"]], showscale=False),
-                text=[f"{v:.1f}%" for v in top_feat["importance"]], textposition="outside", textfont=dict(color="#94a3b8", size=11),
+                text=[f"{v:.1f}%" for v in top_feat["importance"]], textposition="outside", textfont=dict(color="#cbd5e1", size=11),
                 hovertemplate="<b>%{y}</b><br>重要性: %{x:.2f}%<extra></extra>",
             ))
             fig.update_layout(
-                paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#94a3b8", size=12),
+                paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#cbd5e1", size=12),
                 margin=dict(l=140, r=60, t=10, b=20), height=380,
-                xaxis=dict(showgrid=True, gridcolor="rgba(100,180,255,0.06)", title="重要性 (%)", title_font_color="#94a3b8"),
+                xaxis=dict(showgrid=True, gridcolor="rgba(100,180,255,0.06)", title="重要性 (%)", title_font_color="#cbd5e1"),
                 yaxis=dict(showgrid=False, title="", autorange="reversed"), showlegend=False,
             )
             st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
@@ -306,13 +306,13 @@ with dist_col:
             colors = ["#3b82f6" if d < 5 else "#06b6d4" for d in weekday_avg["weekday"]]
             fig.add_trace(go.Bar(
                 x=weekday_avg["星期"], y=weekday_avg["客流量"], marker_color=colors,
-                text=[f"{v:,.0f}" for v in weekday_avg["客流量"]], textposition="outside", textfont=dict(color="#94a3b8", size=11),
+                text=[f"{v:,.0f}" for v in weekday_avg["客流量"]], textposition="outside", textfont=dict(color="#cbd5e1", size=11),
                 hovertemplate="<b>%{x}</b><br>均值: %{y:,.0f} 人次<extra></extra>",
             ))
             fig.update_layout(
-                paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#94a3b8", size=12),
+                paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#cbd5e1", size=12),
                 margin=dict(l=20, r=20, t=10, b=20), height=320,
-                xaxis=dict(showgrid=False, title=""), yaxis=dict(showgrid=True, gridcolor="rgba(100,180,255,0.06)", title="日均客流", title_font_color="#94a3b8"),
+                xaxis=dict(showgrid=False, title=""), yaxis=dict(showgrid=True, gridcolor="rgba(100,180,255,0.06)", title="日均客流", title_font_color="#cbd5e1"),
                 showlegend=False,
             )
             st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
@@ -320,7 +320,7 @@ with dist_col:
 st.markdown("""
 <div style="margin-top: 16px; padding: 20px; background: linear-gradient(145deg, rgba(13,30,54,0.95) 0%, rgba(8,18,34,0.98) 100%); border-radius: 12px; border: 1px solid rgba(100,180,255,0.12);">
     <div style="font-size: 13px; font-weight: 700; color: #e2e8f0; margin-bottom: 8px;">关于数据来源与方法论</div>
-    <div style="font-size: 12px; color: #94a3b8; line-height: 1.6;">
+    <div style="font-size: 12px; color: #cbd5e1; line-height: 1.6;">
         <strong style="color:#f1f5f9;">为什么用九寨沟数据？</strong> 国内5A级景区中，九寨沟是<strong style="color:#3b82f6;">唯一每日在官网公开精确游客人数</strong>的景区。
         该数据已被多篇 SCI 论文引用做客流预测研究。本项目特征均为通用维度（节假日、天气、历史趋势等），
         方法论可无缝迁移至任意景区。<br><br>

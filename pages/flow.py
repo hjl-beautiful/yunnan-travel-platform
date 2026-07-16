@@ -74,7 +74,7 @@ with st.container(border=True):
             <div class="stat-card">
                 <div class="stat-value">{value}</div>
                 <div class="stat-label">{label}</div>
-                <div style="font-size:10px; color:#94a3b8; margin-top:4px;">{sub}</div>
+                <div style="font-size:10px; color:#cbd5e1; margin-top:4px;">{sub}</div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -122,7 +122,7 @@ with st.container(border=True):
             fig.add_trace(go.Bar(
                 x=plot_df["month_name"], y=plot_df["mean"], name="月均客流",
                 marker=dict(color="#3b82f6", line=dict(color="#1e3a5f", width=0.5)),
-                error_y=dict(type="data", array=plot_df["std"], color="#94a3b8", thickness=1),
+                error_y=dict(type="data", array=plot_df["std"], color="#cbd5e1", thickness=1),
                 hovertemplate="<b>%{x}</b><br>月均: %{y:,.0f} 人次<extra></extra>"
             ), row=1, col=1)
         else:
@@ -153,13 +153,13 @@ with st.container(border=True):
                 x=["工作日", "周末"], y=[weekday_avg, weekend_avg],
                 marker_color=["#3b82f6", "#06b6d4"],
                 text=[f"{weekday_avg:,.0f}", f"{weekend_avg:,.0f}"],
-                textposition="outside", textfont=dict(color="#94a3b8", size=12),
+                textposition="outside", textfont=dict(color="#cbd5e1", size=12),
                 hovertemplate="<b>%{x}</b><br>均值: %{y:,.0f} 人次<extra></extra>", showlegend=False
             ), row=2, col=1)
 
         fig.update_layout(
-            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#94a3b8", size=12),
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(color="#94a3b8", size=11), bgcolor="rgba(0,0,0,0)"),
+            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#cbd5e1", size=12),
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(color="#cbd5e1", size=11), bgcolor="rgba(0,0,0,0)"),
             margin=dict(l=40, r=40, t=40, b=20), height=540, hovermode="x unified",
         )
         fig.update_xaxes(showgrid=False, zeroline=False, row=1, col=1)
@@ -187,10 +187,10 @@ with st.container(border=True):
         for label, value, unit in stats_panel:
             st.markdown(f"""
             <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(100,180,255,0.06);">
-                <span style="font-size:12px; color:#94a3b8;">{label}</span>
+                <span style="font-size:12px; color:#cbd5e1;">{label}</span>
                 <div style="text-align:right;">
                     <span style="font-size:15px; font-weight:700; color:#e2e8f0;">{value}</span>
-                    <span style="font-size:10px; color:#94a3b8; margin-left:4px;">{unit}</span>
+                    <span style="font-size:10px; color:#cbd5e1; margin-left:4px;">{unit}</span>
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -205,7 +205,7 @@ with col_a:
         fig_wd.add_trace(go.Box(
             y=[df[df["weekday_name"] == w]["visitors"].values for w in weekday_order],
             x=weekday_order, name="分布", marker_color="#3b82f6",
-            line=dict(color="#94a3b8", width=1), fillcolor="rgba(59,130,246,0.1)", boxmean="sd",
+            line=dict(color="#cbd5e1", width=1), fillcolor="rgba(59,130,246,0.1)", boxmean="sd",
         ))
         fig_wd.add_trace(go.Scatter(
             x=weekday_order, y=weekday_stats["mean"], mode="lines+markers", name="均值趋势",
@@ -213,7 +213,7 @@ with col_a:
             hovertemplate="<b>%{x}</b><br>均值: %{y:,.0f}<extra></extra>"
         ))
         fig_wd.update_layout(
-            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#94a3b8"), showlegend=False,
+            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#cbd5e1"), showlegend=False,
             margin=dict(l=20, r=20, t=10, b=20), height=380,
             xaxis=dict(showgrid=False), yaxis=dict(showgrid=True, gridcolor="rgba(100,180,255,0.06)", tickformat=",", title="人次"),
         )
@@ -234,12 +234,12 @@ with col_b:
             elif m in [4, 5, 6, 7, 8, 9, 10, 11]:
                 colors_month.append("#3b82f6")
             else:
-                colors_month.append("#64748b")
+                colors_month.append("#94a3b8")
         fig_month.add_trace(go.Bar(
             x=month_names, y=[month_mean.get(m, 0) for m in range(1, 13)],
             marker=dict(color=colors_month, line=dict(color="#0f2642", width=1)),
             text=[f"{month_mean.get(m, 0):,.0f}" for m in range(1, 13)],
-            textposition="outside", textfont=dict(color="#94a3b8", size=11),
+            textposition="outside", textfont=dict(color="#cbd5e1", size=11),
             hovertemplate="<b>%{x}</b><br>月均: %{y:,.0f} 人次<extra></extra>",
         ))
         annual_avg = df["visitors"].mean()
@@ -247,7 +247,7 @@ with col_b:
                              annotation_text=f"年均 {annual_avg:,.0f}", annotation_position="right",
                              annotation_font_color="#10b981", annotation_font_size=11)
         fig_month.update_layout(
-            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#94a3b8"), showlegend=False,
+            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#cbd5e1"), showlegend=False,
             margin=dict(l=20, r=20, t=10, b=40), height=380,
             xaxis=dict(showgrid=False), yaxis=dict(showgrid=True, gridcolor="rgba(100,180,255,0.06)", tickformat=",", title="月均人次"),
         )
@@ -264,7 +264,7 @@ with col_c:
             fig_yr.add_trace(go.Bar(
                 x=yearly["year"].astype(str), y=yearly["sum"] / 10000, name="年度总客流(万)",
                 marker=dict(color="#3b82f6", line=dict(color="#1e3a5f", width=0.5)),
-                text=[f"{v:.1f}万" for v in yearly["sum"] / 10000], textposition="outside", textfont=dict(color="#94a3b8", size=11),
+                text=[f"{v:.1f}万" for v in yearly["sum"] / 10000], textposition="outside", textfont=dict(color="#cbd5e1", size=11),
                 yaxis="y", hovertemplate="<b>%{x}</b><br>总客流: %{y:.1f}万<extra></extra>"
             ))
             fig_yr.add_trace(go.Scatter(
@@ -273,11 +273,11 @@ with col_c:
                 hovertemplate="<b>%{x}</b><br>日均: %{y:,.0f}<extra></extra>"
             ))
             fig_yr.update_layout(
-                paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#94a3b8"),
-                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(color="#94a3b8", size=11)),
+                paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#cbd5e1"),
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(color="#cbd5e1", size=11)),
                 margin=dict(l=40, r=60, t=10, b=20), height=360,
-                xaxis=dict(showgrid=False), yaxis=dict(showgrid=True, gridcolor="rgba(100,180,255,0.06)", title="总客流(万)", title_font_color="#94a3b8"),
-                yaxis2=dict(showgrid=False, title="日均(人次)", title_font_color="#94a3b8", overlaying="y", side="right", tickformat=","),
+                xaxis=dict(showgrid=False), yaxis=dict(showgrid=True, gridcolor="rgba(100,180,255,0.06)", title="总客流(万)", title_font_color="#cbd5e1"),
+                yaxis2=dict(showgrid=False, title="日均(人次)", title_font_color="#cbd5e1", overlaying="y", side="right", tickformat=","),
             )
             st.plotly_chart(fig_yr, use_container_width=True, config={"displayModeBar": False})
         else:
@@ -307,13 +307,13 @@ with col_d:
             st.markdown(f"""
             <div style="background:{bg_color}; border-left:3px solid {border_color}; border-radius:0 10px 10px 0; padding:12px 16px; margin-bottom:10px;">
                 <div style="font-size:13px; font-weight:700; color:#e2e8f0; margin-bottom:4px;">{title}</div>
-                <div style="font-size:11px; color:#94a3b8; line-height:1.5;">{text}</div>
+                <div style="font-size:11px; color:#cbd5e1; line-height:1.5;">{text}</div>
             </div>
             """, unsafe_allow_html=True)
 
 st.markdown("""
 <div style="margin-top:20px; padding:16px; background:rgba(15,38,66,0.5); border-radius:12px; border:1px solid rgba(100,180,255,0.08); text-align:center;">
-    <div style="font-size:12px; color:#94a3b8;">数据来源: 九寨沟景区官网 (jiuzhai.com) · 真实每日进沟人数 · 国内唯一公开5A景区客流数据</div>
+    <div style="font-size:12px; color:#cbd5e1;">数据来源: 九寨沟景区官网 (jiuzhai.com) · 真实每日进沟人数 · 国内唯一公开5A景区客流数据</div>
 </div>
 """, unsafe_allow_html=True)
 

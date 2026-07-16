@@ -73,7 +73,7 @@ with st.container(border=True):
             <div class="stat-card {card_class}">
                 <div class="stat-value">{value}</div>
                 <div class="stat-label">{label}</div>
-                <div style="font-size:10px; color:#94a3b8; margin-top:4px;">{sub}</div>
+                <div style="font-size:10px; color:#cbd5e1; margin-top:4px;">{sub}</div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -113,7 +113,7 @@ with col_a:
             mode="lines", line=dict(color="#ef4444", width=1, dash="dash"), name="正态参考线", showlegend=False,
         ), row=1, col=2)
         fig.update_layout(
-            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#94a3b8"), showlegend=False,
+            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#cbd5e1"), showlegend=False,
             margin=dict(l=20, r=20, t=30, b=20), height=420,
         )
         fig.update_xaxes(showgrid=True, gridcolor="rgba(100,180,255,0.06)", title="客流量 (人次)", row=1, col=1)
@@ -145,12 +145,12 @@ with col_b:
                     st.markdown(f"""
                     <div style="margin-bottom:10px;">
                         <span style="background:rgba({r},{g},{b},0.15); color:{color}; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600;">{cat_name}</span>
-                        <span style="color:#94a3b8; font-size:11px; margin-left:6px;">{len(cat_feats)} 个</span>
+                        <span style="color:#cbd5e1; font-size:11px; margin-left:6px;">{len(cat_feats)} 个</span>
                     </div>
                     """, unsafe_allow_html=True)
-                    feature_tags = " ".join([f'<span style="background:rgba(100,180,255,0.08); color:#94a3b8; padding:2px 8px; border-radius:4px; font-size:10px; margin:2px; display:inline-block;">{f}</span>' for f in cat_feats[:8]])
+                    feature_tags = " ".join([f'<span style="background:rgba(100,180,255,0.08); color:#cbd5e1; padding:2px 8px; border-radius:4px; font-size:10px; margin:2px; display:inline-block;">{f}</span>' for f in cat_feats[:8]])
                     if len(cat_feats) > 8:
-                        feature_tags += f' <span style="color:#94a3b8; font-size:10px;">+{len(cat_feats)-8}个</span>'
+                        feature_tags += f' <span style="color:#cbd5e1; font-size:10px;">+{len(cat_feats)-8}个</span>'
                     st.markdown(f'<div style="margin-bottom:14px; line-height:2;">{feature_tags}</div>', unsafe_allow_html=True)
         else:
             st.info("特征工程数据尚未生成，请先运行 data/clean_data.py")
@@ -177,13 +177,13 @@ with col_c:
             fig_feat.add_trace(go.Bar(
                 y=list(reversed(top_feat["feature"])), x=list(reversed(top_feat["importance"])), orientation="h",
                 marker=dict(color=list(reversed(colors_feat)), line=dict(color="#0f2642", width=0.5)),
-                text=[f"{v:.2f}%" for v in reversed(top_feat["importance"])], textposition="outside", textfont=dict(color="#94a3b8", size=11),
+                text=[f"{v:.2f}%" for v in reversed(top_feat["importance"])], textposition="outside", textfont=dict(color="#cbd5e1", size=11),
                 hovertemplate="<b>%{y}</b><br>重要性: %{x:.2f}%<extra></extra>",
             ))
             fig_feat.update_layout(
-                paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#94a3b8"), showlegend=False,
+                paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#cbd5e1"), showlegend=False,
                 margin=dict(l=160, r=60, t=10, b=20), height=460,
-                xaxis=dict(showgrid=True, gridcolor="rgba(100,180,255,0.06)", title="重要性 (%)", title_font_color="#94a3b8"),
+                xaxis=dict(showgrid=True, gridcolor="rgba(100,180,255,0.06)", title="重要性 (%)", title_font_color="#cbd5e1"),
                 yaxis=dict(showgrid=False, autorange="reversed"), bargap=0.3,
             )
             st.plotly_chart(fig_feat, use_container_width=True, config={"displayModeBar": False})
@@ -199,10 +199,10 @@ with col_d:
             <table style="width:100%; border-collapse:collapse; font-size:12px;">
                 <thead>
                     <tr style="background:rgba(15,38,66,0.8);">
-                        <th style="padding:8px 12px; text-align:left; color:#94a3b8;">模型</th>
-                        <th style="padding:8px 12px; text-align:right; color:#94a3b8;">R²</th>
-                        <th style="padding:8px 12px; text-align:right; color:#94a3b8;">MAE</th>
-                        <th style="padding:8px 12px; text-align:right; color:#94a3b8;">MAPE</th>
+                        <th style="padding:8px 12px; text-align:left; color:#cbd5e1;">模型</th>
+                        <th style="padding:8px 12px; text-align:right; color:#cbd5e1;">R²</th>
+                        <th style="padding:8px 12px; text-align:right; color:#cbd5e1;">MAE</th>
+                        <th style="padding:8px 12px; text-align:right; color:#cbd5e1;">MAPE</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -218,15 +218,15 @@ with col_d:
                 <tr style="background:{bg};{border}border-bottom:1px solid rgba(100,180,255,0.06);">
                     <td style="padding:10px 12px; color:#e2e8f0; font-weight:{'700' if is_best else '400'};">{idx}</td>
                     <td style="padding:10px 12px; text-align:right; color:#f1f5f9; font-weight:600;">{r2_val}</td>
-                    <td style="padding:10px 12px; text-align:right; color:#94a3b8;">{mae_val}</td>
-                    <td style="padding:10px 12px; text-align:right; color:#94a3b8;">{mape_val}</td>
+                    <td style="padding:10px 12px; text-align:right; color:#cbd5e1;">{mae_val}</td>
+                    <td style="padding:10px 12px; text-align:right; color:#cbd5e1;">{mape_val}</td>
                 </tr>
                 """, unsafe_allow_html=True)
             st.markdown("</tbody></table>", unsafe_allow_html=True)
             st.markdown("""
             <div style="margin-top:16px; padding:12px; background:rgba(59,130,246,0.05); border-radius:8px; border:1px solid rgba(59,130,246,0.1);">
                 <div style="font-size:12px; font-weight:700; color:#3b82f6; margin-bottom:4px;">参考文献对比</div>
-                <div style="font-size:11px; color:#94a3b8; line-height:1.6;">
+                <div style="font-size:11px; color:#cbd5e1; line-height:1.6;">
                     Cheng, J. et al. (2026). SD-ConvLSTM-Attn: A Hybrid Deep Learning Model for Scenic Spot Tourist Flow Prediction.
                     <em>MDPI Sustainability</em>, 18(14), 7099. -- <strong style="color:#10b981;">R² = 0.892</strong>
                 </div>
@@ -246,8 +246,8 @@ with st.container(border=True):
         st.markdown(f"""
         <div style="background:rgba(16,185,129,0.05); border:1px solid rgba(16,185,129,0.15); border-radius:12px; padding:20px; text-align:center;">
             <div style="font-size:28px; font-weight:800; color:{color};">{complete_pct:.1f}%</div>
-            <div style="font-size:11px; color:#94a3b8; margin-top:4px;">数据完整性</div>
-            <div style="font-size:10px; color:#94a3b8; margin-top:4px;">缺失 {missing_count} 条 / 总计 {len(df)} 条</div>
+            <div style="font-size:11px; color:#cbd5e1; margin-top:4px;">数据完整性</div>
+            <div style="font-size:10px; color:#cbd5e1; margin-top:4px;">缺失 {missing_count} 条 / 总计 {len(df)} 条</div>
         </div>
         """, unsafe_allow_html=True)
     with q2:
@@ -256,8 +256,8 @@ with st.container(border=True):
         st.markdown(f"""
         <div style="background:rgba(16,185,129,0.05); border:1px solid rgba(16,185,129,0.15); border-radius:12px; padding:20px; text-align:center;">
             <div style="font-size:28px; font-weight:800; color:{color2};">{date_continuity:.1f}%</div>
-            <div style="font-size:11px; color:#94a3b8; margin-top:4px;">日期连续性</div>
-            <div style="font-size:10px; color:#94a3b8; margin-top:4px;">日期间隔为1天的比例</div>
+            <div style="font-size:11px; color:#cbd5e1; margin-top:4px;">日期连续性</div>
+            <div style="font-size:10px; color:#cbd5e1; margin-top:4px;">日期间隔为1天的比例</div>
         </div>
         """, unsafe_allow_html=True)
     with q3:
@@ -266,8 +266,8 @@ with st.container(border=True):
         st.markdown(f"""
         <div style="background:rgba(16,185,129,0.05); border:1px solid rgba(16,185,129,0.15); border-radius:12px; padding:20px; text-align:center;">
             <div style="font-size:28px; font-weight:800; color:{color3};">{outlier_pct:.1f}%</div>
-            <div style="font-size:11px; color:#94a3b8; margin-top:4px;">极端值比例</div>
-            <div style="font-size:10px; color:#94a3b8; margin-top:4px;">超过99%分位 {outlier_count} 条</div>
+            <div style="font-size:11px; color:#cbd5e1; margin-top:4px;">极端值比例</div>
+            <div style="font-size:10px; color:#cbd5e1; margin-top:4px;">超过99%分位 {outlier_count} 条</div>
         </div>
         """, unsafe_allow_html=True)
     with q4:
@@ -276,15 +276,15 @@ with st.container(border=True):
         st.markdown(f"""
         <div style="background:rgba(16,185,129,0.05); border:1px solid rgba(16,185,129,0.15); border-radius:12px; padding:20px; text-align:center;">
             <div style="font-size:28px; font-weight:800; color:{color4};">{months_present}/12</div>
-            <div style="font-size:11px; color:#94a3b8; margin-top:4px;">月份覆盖</div>
-            <div style="font-size:10px; color:#94a3b8; margin-top:4px;">12个月中已覆盖 {months_present} 个月</div>
+            <div style="font-size:11px; color:#cbd5e1; margin-top:4px;">月份覆盖</div>
+            <div style="font-size:10px; color:#cbd5e1; margin-top:4px;">12个月中已覆盖 {months_present} 个月</div>
         </div>
         """, unsafe_allow_html=True)
 
 st.markdown("""
 <div style="margin-top:20px; padding:16px; background:rgba(15,38,66,0.5); border-radius:12px; border:1px solid rgba(100,180,255,0.08);">
     <div style="font-size:12px; font-weight:700; color:#e2e8f0; margin-bottom:8px;">技术栈</div>
-    <div style="font-size:11px; color:#94a3b8; line-height:1.8;">
+    <div style="font-size:11px; color:#cbd5e1; line-height:1.8;">
         <strong style="color:#3b82f6;">XGBoost</strong> 梯度提升模型 ·
         <strong style="color:#8b5cf6;">GridSearchCV</strong> 超参数调优 ·
         <strong style="color:#10b981;">TimeSeriesSplit</strong> 交叉验证 ·

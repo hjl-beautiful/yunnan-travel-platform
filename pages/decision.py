@@ -47,9 +47,9 @@ with st.container(border=True):
             with col:
                 st.markdown(f"""
                 <div style="background:linear-gradient(145deg, rgba(13,30,54,0.95) 0%, rgba(8,18,34,0.98) 100%); border:1px solid rgba(100,180,255,0.08); border-radius:12px; padding:16px; text-align:center; border-top:3px solid {color};">
-                    <div style="font-size:11px; color:#94a3b8; margin-bottom:4px;">{label}</div>
+                    <div style="font-size:11px; color:#cbd5e1; margin-bottom:4px;">{label}</div>
                     <div style="font-size:24px; font-weight:800; color:{color};">{value}</div>
-                    <div style="font-size:10px; color:#94a3b8; margin-top:4px;">{sub}</div>
+                    <div style="font-size:10px; color:#cbd5e1; margin-top:4px;">{sub}</div>
                 </div>
                 """, unsafe_allow_html=True)
     else:
@@ -75,13 +75,13 @@ if not forecast_df.empty:
                     <div style="display:flex; align-items:center; gap:12px;">
                         <div>
                             <div style="font-size:14px; font-weight:700; color:#e2e8f0;">{row['完整日期']}</div>
-                            <div style="font-size:11px; color:#94a3b8;">{row['星期']}</div>
+                            <div style="font-size:11px; color:#cbd5e1;">{row['星期']}</div>
                         </div>
                     </div>
                     <div style="display:flex; align-items:center; gap:16px;">
                         <div style="text-align:right;">
                             <div style="font-size:18px; font-weight:800; color:#e2e8f0;">{row['预测']:,.0f}</div>
-                            <div style="font-size:10px; color:#94a3b8;">载客率 {row['load_rate']:.1f}%</div>
+                            <div style="font-size:10px; color:#cbd5e1;">载客率 {row['load_rate']:.1f}%</div>
                         </div>
                         <div style="background:{status_color}20; color:{status_color}; padding:4px 12px; border-radius:12px; font-size:11px; font-weight:600; border:1px solid {status_color}40;">
                             {row['status']}
@@ -104,7 +104,7 @@ if not forecast_df.empty:
                 hovertemplate="<b>%{label}</b><br>天数: %{value}<br>占比: %{percent}<extra></extra>"
             )])
             fig.update_layout(
-                paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#94a3b8"),
+                paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#cbd5e1"),
                 margin=dict(l=20, r=20, t=10, b=20), height=320, showlegend=False,
                 annotations=[dict(text=f"{len(forecast_df)}天", x=0.5, y=0.5, font=dict(size=16, color="#e2e8f0"), showarrow=False)]
             )
@@ -116,20 +116,20 @@ if not forecast_df.empty:
                 st.markdown(f"""
                 <div style="background:rgba(239,68,68,0.05); border:1px solid rgba(239,68,68,0.15); border-radius:8px; padding:12px; margin-bottom:10px;">
                     <div style="font-size:13px; font-weight:700; color:#f87171; margin-bottom:4px;">人员配置</div>
-                    <div style="font-size:11px; color:#94a3b8; line-height:1.5;">高负荷 {high_load_days} 天，建议比平时增派 <strong style="color:#e2e8f0;">30-50%</strong> 的安保与引导人员</div>
+                    <div style="font-size:11px; color:#cbd5e1; line-height:1.5;">高负荷 {high_load_days} 天，建议比平时增派 <strong style="color:#e2e8f0;">30-50%</strong> 的安保与引导人员</div>
                 </div>
                 """, unsafe_allow_html=True)
             if warning_days > 0:
                 st.markdown(f"""
                 <div style="background:rgba(245,158,11,0.05); border:1px solid rgba(245,158,11,0.15); border-radius:8px; padding:12px; margin-bottom:10px;">
                     <div style="font-size:13px; font-weight:700; color:#fbbf24; margin-bottom:4px;">物资储备</div>
-                    <div style="font-size:11px; color:#94a3b8; line-height:1.5;">预警 {warning_days} 天，建议提前储备 <strong style="color:#e2e8f0;">20-30%</strong> 的餐饮和交通运力</div>
+                    <div style="font-size:11px; color:#cbd5e1; line-height:1.5;">预警 {warning_days} 天，建议提前储备 <strong style="color:#e2e8f0;">20-30%</strong> 的餐饮和交通运力</div>
                 </div>
                 """, unsafe_allow_html=True)
             st.markdown(f"""
             <div style="background:rgba(16,185,129,0.05); border:1px solid rgba(16,185,129,0.15); border-radius:8px; padding:12px;">
                 <div style="font-size:13px; font-weight:700; color:#34d399; margin-bottom:4px;">疏导策略</div>
-                <div style="font-size:11px; color:#94a3b8; line-height:1.5;">建议开放备用入口、延长开放时间、引导至次要景点错峰游览</div>
+                <div style="font-size:11px; color:#cbd5e1; line-height:1.5;">建议开放备用入口、延长开放时间、引导至次要景点错峰游览</div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -173,8 +173,8 @@ if not forecast_df.empty:
                     <div style="font-size:14px; font-weight:700; color:#e2e8f0;">{date} · {title}</div>
                     <div style="font-size:16px; font-weight:800; color:{border_color};">{pred:,.0f} 人次</div>
                 </div>
-                <div style="font-size:11px; color:#94a3b8; margin-bottom:8px;">载客率 {load_rate:.1f}%</div>
-                <ul style="margin:0; padding-left:16px; font-size:11px; color:#94a3b8; line-height:1.8;">
+                <div style="font-size:11px; color:#cbd5e1; margin-bottom:8px;">载客率 {load_rate:.1f}%</div>
+                <ul style="margin:0; padding-left:16px; font-size:11px; color:#cbd5e1; line-height:1.8;">
                     {''.join([f'<li>{a}</li>' for a in actions])}
                 </ul>
             </div>
@@ -190,9 +190,9 @@ if not forecast_df.empty:
                 diff = pred_avg - hist_avg
                 st.markdown(f"""
                 <div style="background:rgba(59,130,246,0.05); border:1px solid rgba(59,130,246,0.15); border-radius:12px; padding:16px; text-align:center;">
-                    <div style="font-size:11px; color:#94a3b8; margin-bottom:4px;">7日预测均值 vs 近30天均值</div>
+                    <div style="font-size:11px; color:#cbd5e1; margin-bottom:4px;">7日预测均值 vs 近30天均值</div>
                     <div style="font-size:22px; font-weight:800; color:#3b82f6;">{diff:+,.0f}</div>
-                    <div style="font-size:10px; color:#94a3b8; margin-top:4px;">人次 / 天</div>
+                    <div style="font-size:10px; color:#cbd5e1; margin-top:4px;">人次 / 天</div>
                 </div>
                 """, unsafe_allow_html=True)
         with col_v2:
@@ -200,9 +200,9 @@ if not forecast_df.empty:
                 r2 = metrics.get('r2')
                 st.markdown(f"""
                 <div style="background:rgba(16,185,129,0.05); border:1px solid rgba(16,185,129,0.15); border-radius:12px; padding:16px; text-align:center;">
-                    <div style="font-size:11px; color:#94a3b8; margin-bottom:4px;">预测准确度</div>
+                    <div style="font-size:11px; color:#cbd5e1; margin-bottom:4px;">预测准确度</div>
                     <div style="font-size:22px; font-weight:800; color:#10b981;">{r2:.4f}</div>
-                    <div style="font-size:10px; color:#94a3b8; margin-top:4px;">R² 决定系数</div>
+                    <div style="font-size:10px; color:#cbd5e1; margin-top:4px;">R² 决定系数</div>
                 </div>
                 """, unsafe_allow_html=True)
         with col_v3:
@@ -211,14 +211,14 @@ if not forecast_df.empty:
                 potential_savings = forecast_df["预测"].sum() * (mape / 100) * 2  # 假设每次误调配成本2元
                 st.markdown(f"""
                 <div style="background:rgba(245,158,11,0.05); border:1px solid rgba(245,158,11,0.15); border-radius:12px; padding:16px; text-align:center;">
-                    <div style="font-size:11px; color:#94a3b8; margin-bottom:4px;">潜在资源优化价值</div>
+                    <div style="font-size:11px; color:#cbd5e1; margin-bottom:4px;">潜在资源优化价值</div>
                     <div style="font-size:22px; font-weight:800; color:#f59e0b;">¥{potential_savings:,.0f}</div>
-                    <div style="font-size:10px; color:#94a3b8; margin-top:4px;">7日预测周期</div>
+                    <div style="font-size:10px; color:#cbd5e1; margin-top:4px;">7日预测周期</div>
                 </div>
                 """, unsafe_allow_html=True)
         
         st.markdown("""
-        <div style="margin-top:16px; padding:12px; background:rgba(15,38,66,0.5); border-radius:8px; font-size:11px; color:#94a3b8; line-height:1.6;">
+        <div style="margin-top:16px; padding:12px; background:rgba(15,38,66,0.5); border-radius:8px; font-size:11px; color:#cbd5e1; line-height:1.6;">
             <strong style="color:#e2e8f0;">说明：</strong> 潜在资源优化价值基于预测误差降低后减少的过度配置与应急支出估算。
             模型准确度越高，景区越能精准匹配人力、物资与交通资源，避免旺季资源不足和淡季资源浪费。
         </div>
@@ -226,7 +226,7 @@ if not forecast_df.empty:
 
 st.markdown("""
 <div style="margin-top:20px; padding:16px; background:rgba(15,38,66,0.5); border-radius:12px; border:1px solid rgba(100,180,255,0.08); text-align:center;">
-    <div style="font-size:12px; color:#94a3b8;">
+    <div style="font-size:12px; color:#cbd5e1;">
         运营决策建议基于 XGBoost 7日预测结果自动生成 · 建议结合实际天气、节假日政策灵活调整
     </div>
 </div>

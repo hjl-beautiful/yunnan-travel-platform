@@ -74,11 +74,17 @@ def get_model_metrics():
 
 
 def get_feature_importance(top_n=15):
-    """获取特征重要性排名"""
+    """获取特征重要性排名（归一化为百分比）"""
     imp_path = os.path.join(MODEL_DIR, "feature_importance.csv")
     if os.path.exists(imp_path):
         df = pd.read_csv(imp_path)
-        return df.head(top_n)
+        # 按重要性排序并取 top_n
+        df = df.sort_values("importance", ascending=False).head(top_n).reset_index(drop=True)
+        # 归一化为百分比（基于 top_n 的总和）
+        total = df["importance"].sum()
+        if total > 0:
+            df["importance"] = df["importance"] / total * 100
+        return df
     return pd.DataFrame()
 
 
