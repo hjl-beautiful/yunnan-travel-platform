@@ -101,7 +101,14 @@ col_main, col_side = st.columns([7, 3])
 
 with col_main:
     with st.container(border=True):
-        st.markdown('<div class="panel-header">7日客流预测</div>', unsafe_allow_html=True)
+        st.markdown(f"""
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <div class="panel-header" style="margin-bottom:0; padding-bottom:0; border-bottom:none;">7日客流预测</div>
+            <div style="font-size:11px; color:#ef4444; border:1px solid rgba(239,68,68,0.3); padding:3px 10px; border-radius:20px; background:rgba(239,68,68,0.08);">
+                承载上限 {capacity:,.0f}
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
         
         if not hist_df.empty and not forecast_df.empty:
             last_hist_date = hist_df["日期"].iloc[-1]
@@ -134,11 +141,12 @@ with col_main:
                 hoverinfo="skip"
             ))
             
-            fig_main.add_hline(
-                y=capacity, line_dash="dash", line_color="#ef4444", line_width=1.5,
-                annotation_text="承载上限 41,000", annotation_position="right",
-                annotation_font_color="#ef4444", annotation_font_size=10
-            )
+            # 计算合理的 Y 轴上限，避免承载上限虚线撑出大片空白
+            hist_max = hist_df["客流量"].max() if not hist_df.empty else 0
+            forecast_max = forecast_df["预测"].max() if not forecast_df.empty else 0
+            upper_max = forecast_df["上限"].max() if not forecast_df.empty else 0
+            data_max = max(hist_max, forecast_max, upper_max, 1)
+            y_max = data_max * 1.15
             
             fig_main.update_layout(
                 paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
@@ -148,7 +156,9 @@ with col_main:
                 margin=dict(l=40, r=40, t=10, b=55), height=440,
                 hovermode="x unified",
                 xaxis=dict(showgrid=False, zeroline=False, title="日期", title_font_color="#cbd5e1"),
-                yaxis=dict(showgrid=True, gridcolor="rgba(100,180,255,0.06)", zeroline=False, tickformat=",", title="客流量 (人次)", title_font_color="#cbd5e1"),
+                yaxis=dict(showgrid=True, gridcolor="rgba(100,180,255,0.06)", zeroline=False, tickformat=",",
+                           title="客流量 (人次)", title_font_color="#cbd5e1",
+                           range=[0, y_max]),
             )
             
             st.markdown('<div style="min-height:440px;">', unsafe_allow_html=True)
