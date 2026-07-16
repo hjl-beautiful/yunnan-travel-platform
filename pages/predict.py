@@ -161,6 +161,9 @@ with col_main:
                            range=[0, y_max]),
             )
             
+            st.markdown('<div style="min-height:360px;">', unsafe_allow_html=True)
+            st.plotly_chart(fig_main, use_container_width=True, key="forecast_main_chart", config={"displayModeBar": False})
+            st.markdown('</div>', unsafe_allow_html=True)
             
             st.markdown('<div style="height:16px;"></div>', unsafe_allow_html=True)
             
@@ -271,6 +274,17 @@ with col_main:
                 st.plotly_chart(fig_pie, use_container_width=True, key="load_pie_chart", config={"displayModeBar": False})
         else:
             st.info("暂无预测数据")
+    
+    with st.container(border=True):
+        st.markdown('<div class="panel-header" style="margin-bottom:8px;">预测使用说明</div>', unsafe_allow_html=True)
+        st.markdown("""
+        <div style="font-size:12px; color:#cbd5e1; line-height:1.6;">
+            <strong style="color:#3b82f6;">历史客流</strong>：展示过去 30 天实际入园人次，用于判断当前基线。<br>
+            <strong style="color:#06b6d4;">AI 预测</strong>：基于 XGBoost 模型滚动预测未来 7 天客流，含 90% 置信区间。<br>
+            <strong style="color:#f59e0b;">日环比</strong>：反映相邻预测日之间的客流变化，正值为上升、负值为下降。<br>
+            <strong style="color:#ef4444;">承载上限</strong>：41,000 人次/日，超过 70% 进入预警、90% 进入高负荷。
+        </div>
+        """, unsafe_allow_html=True)
 
 with col_side:
     with st.container(border=True):
@@ -294,7 +308,7 @@ with col_side:
                 bar_color = "#ef4444" if load_rate > 90 else ("#f59e0b" if load_rate > 70 else "#10b981")
                 
                 st.markdown(f"""
-                <div style="padding:12px 0; border-bottom:1px solid rgba(100,180,255,0.06);">
+                <div style="padding:8px 0; border-bottom:1px solid rgba(100,180,255,0.06);">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <div>
                             <div style="font-size:14px; font-weight:700; color:#e2e8f0;">{date_str}</div>
@@ -318,7 +332,7 @@ with col_side:
     with st.container(border=True):
         st.markdown('<div class="panel-header" style="margin-bottom:8px;">关键特征</div>', unsafe_allow_html=True)
         
-        feat_df = get_feature_importance(8)
+        feat_df = get_feature_importance(5)
         if not feat_df.empty:
             for _, row in feat_df.iterrows():
                 pct = row["importance"]
