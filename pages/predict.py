@@ -146,14 +146,14 @@ with col_main:
             forecast_max = forecast_df["预测"].max() if not forecast_df.empty else 0
             upper_max = forecast_df["上限"].max() if not forecast_df.empty else 0
             data_max = max(hist_max, forecast_max, upper_max, 1)
-            y_max = data_max * 1.15
+            y_max = data_max * 1.05
             
             fig_main.update_layout(
                 paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
                 font=dict(color="#cbd5e1", size=11),
-                legend=dict(orientation="h", yanchor="top", y=-0.12, xanchor="center", x=0.5,
+                legend=dict(orientation="h", yanchor="top", y=-0.15, xanchor="center", x=0.5,
                              font=dict(color="#cbd5e1", size=10), bgcolor="rgba(0,0,0,0.3)"),
-                margin=dict(l=40, r=40, t=5, b=35), height=360,
+                margin=dict(l=40, r=40, t=10, b=35), height=300,
                 hovermode="x unified",
                 xaxis=dict(showgrid=False, zeroline=False, title="", title_font_color="#cbd5e1"),
                 yaxis=dict(showgrid=True, gridcolor="rgba(100,180,255,0.06)", zeroline=False, tickformat=",",
@@ -161,11 +161,11 @@ with col_main:
                            range=[0, y_max]),
             )
             
-            st.markdown('<div style="min-height:360px;">', unsafe_allow_html=True)
+            st.markdown('<div style="min-height:300px;">', unsafe_allow_html=True)
             st.plotly_chart(fig_main, use_container_width=True, key="forecast_main_chart", config={"displayModeBar": False})
             st.markdown('</div>', unsafe_allow_html=True)
             
-            st.markdown('<div style="height:16px;"></div>', unsafe_allow_html=True)
+            st.markdown('<div style="height:28px;"></div>', unsafe_allow_html=True)
             
             # ========== 图表2：日环比 ==========
             if len(forecast_df) > 1:
