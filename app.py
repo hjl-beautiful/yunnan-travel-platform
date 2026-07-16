@@ -323,7 +323,7 @@ st.markdown("""
     <div style="font-size: 12px; color: #cbd5e1; line-height: 1.6;">
         <strong style="color:#f1f5f9;">为什么用九寨沟数据？</strong> 国内5A级景区中，九寨沟是<strong style="color:#3b82f6;">唯一每日在官网公开精确游客人数</strong>的景区。
         该数据已被多篇 SCI 论文引用做客流预测研究。本项目特征均为通用维度（节假日、天气、历史趋势等），
-        方法论可无缝迁移至任意景区。<br><br>
+        方法论可无缝迁移至<strong style="color:#3b82f6;">同类景区</strong>。<br><br>
         <strong style="color:#f1f5f9;">数据来源：</strong>https://www.jiuzhai.com/news/number-of-tourists（九寨沟景区官方网站）
     </div>
 </div>

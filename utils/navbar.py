@@ -331,7 +331,7 @@ def render_navbar(current_page: str = "首页"):
     <div class="top-header">
         <div>
             <div class="top-header-title">景区客流智能预测平台</div>
-            <div class="top-header-subtitle">基于 XGBoost 时序预测 | 九寨沟真实数据 | 方法论可迁移至任意5A景区</div>
+            <div class="top-header-subtitle">基于 XGBoost 时序预测 | 九寨沟真实数据 | 方法论可迁移至同类5A景区</div>
         </div>
         <div style="display:flex; align-items:center; gap:16px;">
             <div class="live-indicator">
