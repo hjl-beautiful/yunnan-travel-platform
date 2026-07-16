@@ -251,9 +251,11 @@ with col_main:
                     • 峰值预计出现在 <strong style="color:#06b6d4;">{peak_date}</strong>，当日客流 {peak:,.0f} 人次，建议重点监控。<br>
                     • 预测趋势 <strong style="color:{trend_color};">{trend_text}</strong>，可参考建议调整运营策略。
                 </div>
+                <div style="height:10px;"></div>
                 """, unsafe_allow_html=True)
             
             with col_right:
+                st.markdown('<div style="height:10px;"></div>', unsafe_allow_html=True)
                 high_count = int((forecast_df["预测"] > capacity * 0.9).sum())
                 warn_count = int(((forecast_df["预测"] > capacity * 0.7) & (forecast_df["预测"] <= capacity * 0.9)).sum())
                 normal_count = max(0, len(forecast_df) - high_count - warn_count)
@@ -263,15 +265,17 @@ with col_main:
                     marker=dict(colors=["#10b981", "#f59e0b", "#ef4444"], line=dict(color="rgba(0,0,0,0)", width=0)),
                     textinfo="label+percent", textposition="outside",
                     textfont=dict(color="#cbd5e1", size=11),
-                    hovertemplate="<b>%{label}</b><br>天数: %{value}<br>占比: %{percent}<extra></extra>"
+                    hovertemplate="<b>%{label}</b><br>天数: %{value}<br>占比: %{percent}<extra></extra>",
+                    automargin=True
                 )])
                 fig_pie.update_layout(
                     paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
                     font=dict(color="#cbd5e1", size=11), showlegend=False,
-                    margin=dict(l=10, r=10, t=10, b=10), height=240,
+                    margin=dict(l=10, r=10, t=20, b=20), height=230,
                     annotations=[dict(text="负荷等级", x=0.5, y=0.5, font_size=12, font_color="#e2e8f0", showarrow=False)]
                 )
                 st.plotly_chart(fig_pie, use_container_width=True, key="load_pie_chart", config={"displayModeBar": False})
+                st.markdown('<div style="height:10px;"></div>', unsafe_allow_html=True)
         else:
             st.info("暂无预测数据")
     
