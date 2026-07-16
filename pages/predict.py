@@ -107,74 +107,85 @@ with col_main:
             last_hist_date = hist_df["日期"].iloc[-1]
             forecast_dates = pd.to_datetime([last_hist_date + timedelta(days=i+1) for i in range(len(forecast_df))])
             
-            fig = make_subplots(
-                rows=2, cols=1, shared_xaxes=True,
-                vertical_spacing=0.14,
-                subplot_titles=("", "")
-            )
+            # ========== 图表1：客流预测趋势 ==========
+            fig_main = go.Figure()
             
-            fig.add_trace(go.Scatter(
+            fig_main.add_trace(go.Scatter(
                 x=hist_df["日期"], y=hist_df["客流量"],
                 mode="lines", name="近期客流",
                 line=dict(color="#3b82f6", width=2.5),
                 fill="tozeroy", fillcolor="rgba(59,130,246,0.06)",
                 hovertemplate="<b>%{x}</b><br>客流: %{y:,.0f}<extra></extra>"
-            ), row=1, col=1)
+            ))
             
-            fig.add_trace(go.Scatter(
+            fig_main.add_trace(go.Scatter(
                 x=forecast_dates, y=forecast_df["预测"],
                 mode="lines+markers", name="AI预测",
                 line=dict(color="#06b6d4", width=3),
                 marker=dict(size=10, color="#06b6d4", line=dict(color="white", width=2)),
                 hovertemplate="<b>%{x}</b><br>预测: %{y:,.0f}<extra></extra>"
-            ), row=1, col=1)
+            ))
             
-            fig.add_trace(go.Scatter(
+            fig_main.add_trace(go.Scatter(
                 x=list(forecast_dates) + list(forecast_dates)[::-1],
                 y=list(forecast_df["上限"]) + list(forecast_df["下限"])[::-1],
                 fill="toself", fillcolor="rgba(6,182,212,0.12)",
                 line=dict(color="rgba(0,0,0,0)"), name="90%置信区间",
                 hoverinfo="skip"
-            ), row=1, col=1)
+            ))
             
-            fig.add_hline(y=capacity, line_dash="dash", line_color="#ef4444", line_width=1.5,
-                           annotation_text="承载上限 41,000", annotation_position="right",
-                           annotation_font_color="#ef4444", annotation_font_size=10, row=1, col=1)
+            fig_main.add_hline(
+                y=capacity, line_dash="dash", line_color="#ef4444", line_width=1.5,
+                annotation_text="承载上限 41,000", annotation_position="right",
+                annotation_font_color="#ef4444", annotation_font_size=10
+            )
             
+            fig_main.update_layout(
+                paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+                font=dict(color="#cbd5e1", size=12),
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
+                             font=dict(color="#cbd5e1", size=11), bgcolor="rgba(0,0,0,0)"),
+                margin=dict(l=40, r=40, t=50, b=40), height=380,
+                hovermode="x unified",
+                xaxis=dict(showgrid=False, zeroline=False, title="日期", title_font_color="#cbd5e1"),
+                yaxis=dict(showgrid=True, gridcolor="rgba(100,180,255,0.06)", zeroline=False, tickformat=",", title="客流量 (人次)", title_font_color="#cbd5e1"),
+            )
+            
+            st.markdown('<div style="min-height:380px;">', unsafe_allow_html=True)
+            st.plotly_chart(fig_main, use_container_width=True, height=380, key="forecast_main_chart", config={"displayModeBar": False})
+            st.markdown('</div>', unsafe_allow_html=True)
+            
+            # ========== 图表2：日环比 ==========
             if len(forecast_df) > 1:
                 pred_values = forecast_df["预测"].values
                 mom = [(pred_values[i] - pred_values[i-1]) / pred_values[i-1] * 100 for i in range(1, len(pred_values))]
                 mom = [0] + mom
                 mom_colors = ["#34d399" if v >= 0 else "#f87171" for v in mom]
                 
-                fig.add_trace(go.Bar(
+                fig_mom = go.Figure()
+                fig_mom.add_trace(go.Bar(
                     x=forecast_dates, y=mom,
                     marker_color=mom_colors, name="日环比",
                     text=[f"{v:+.1f}%" for v in mom],
                     textposition="outside", textfont=dict(color="#cbd5e1", size=10),
                     hovertemplate="<b>%{x}</b><br>环比: %{y:+.1f}%<extra></extra>"
-                ), row=2, col=1)
-            
-            fig.update_layout(
-                paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-                font=dict(color="#cbd5e1", size=12),
-                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
-                             font=dict(color="#cbd5e1", size=11), bgcolor="rgba(0,0,0,0)"),
-                margin=dict(l=40, r=40, t=50, b=20), height=520,
-                hovermode="x unified",
-            )
-            fig.update_xaxes(showgrid=False, zeroline=False, row=1, col=1)
-            fig.update_yaxes(showgrid=True, gridcolor="rgba(100,180,255,0.06)", zeroline=False, tickformat=",", 
-                              title="客流量 (人次)", row=1, col=1)
-            fig.update_xaxes(showgrid=False, row=2, col=1)
-            max_mom = max(abs(min(mom)), abs(max(mom))) if mom else 5
-            fig.update_yaxes(showgrid=True, gridcolor="rgba(100,180,255,0.06)", zeroline=True, 
+                ))
+                
+                max_mom = max(abs(min(mom)), abs(max(mom))) if mom else 5
+                fig_mom.update_layout(
+                    paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+                    font=dict(color="#cbd5e1", size=12),
+                    margin=dict(l=40, r=40, t=10, b=20), height=160,
+                    showlegend=False,
+                    xaxis=dict(showgrid=False, zeroline=False, title="", title_font_color="#cbd5e1"),
+                    yaxis=dict(showgrid=True, gridcolor="rgba(100,180,255,0.06)", zeroline=True, 
                               zerolinecolor="rgba(100,180,255,0.2)", title="日环比 (%)", 
-                              range=[-max(2, max_mom*1.1), max(2, max_mom*1.1)], row=2, col=1)
-            
-            st.markdown('<div style="min-height:520px;">', unsafe_allow_html=True)
-            st.plotly_chart(fig, use_container_width=True, height=520, key="forecast_main_chart", config={"displayModeBar": False})
-            st.markdown('</div>', unsafe_allow_html=True)
+                              range=[-max(3, max_mom*1.1), max(3, max_mom*1.1)], title_font_color="#cbd5e1"),
+                )
+                
+                st.markdown('<div style="min-height:160px;">', unsafe_allow_html=True)
+                st.plotly_chart(fig_mom, use_container_width=True, height=160, key="forecast_mom_chart", config={"displayModeBar": False})
+                st.markdown('</div>', unsafe_allow_html=True)
         else:
             st.warning("数据加载中，请稍候...")
 

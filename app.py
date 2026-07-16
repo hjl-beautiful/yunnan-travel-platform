@@ -155,12 +155,12 @@ with chart_col1:
             fig.update_layout(
                 paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#cbd5e1", size=12),
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(color="#cbd5e1", size=11), bgcolor="rgba(0,0,0,0)"),
-                margin=dict(l=40, r=40, t=60, b=40), height=480, hovermode="x unified", showlegend=True,
+                margin=dict(l=40, r=40, t=60, b=40), height=420, hovermode="x unified", showlegend=True,
                 xaxis=dict(showgrid=False, zeroline=False, title="日期", title_font_color="#cbd5e1"),
                 yaxis=dict(showgrid=True, gridcolor="rgba(100,180,255,0.06)", zeroline=False, tickformat=",", title="客流量（人次）", title_font_color="#cbd5e1"),
             )
             
-            st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False, "responsive": True})
+            st.plotly_chart(fig, use_container_width=True, height=420, key="home_main_chart", config={"displayModeBar": False, "responsive": True})
         except Exception as e:
             st.error(f"图表渲染出错: {str(e)}")
             st.info("请检查浏览器控制台或刷新页面重试")
@@ -180,7 +180,7 @@ with chart_col2:
                 elif pred > capacity * 0.7:
                     badge = '<span class="badge badge-yellow">预警</span>'
                 st.markdown(f"""
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(100,180,255,0.06);">
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid rgba(100,180,255,0.06);">
                     <div>
                         <div style="font-size:13px; font-weight:600; color:#e2e8f0;">{date_str}</div>
                         <div style="font-size:11px; color:#cbd5e1;">{lower:,.0f} - {upper:,.0f}</div>
@@ -203,7 +203,7 @@ with chart_col2:
             ]
             for label, val, desc in perf_items:
                 st.markdown(f"""
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(100,180,255,0.06);">
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid rgba(100,180,255,0.06);">
                     <div>
                         <div style="font-size:12px; color:#cbd5e1;">{label}</div>
                         <div style="font-size:11px; color:#cbd5e1;">{desc}</div>
@@ -229,7 +229,7 @@ with feat_col:
             ))
             fig.update_layout(
                 paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#cbd5e1", size=12),
-                margin=dict(l=140, r=60, t=10, b=20), height=380,
+                margin=dict(l=140, r=60, t=10, b=20), height=340,
                 xaxis=dict(showgrid=True, gridcolor="rgba(100,180,255,0.06)", title="重要性 (%)", title_font_color="#cbd5e1"),
                 yaxis=dict(showgrid=False, title="", autorange="reversed"), showlegend=False,
             )

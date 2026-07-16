@@ -96,7 +96,7 @@ with st.container(border=True):
     chart_col1, chart_col2 = st.columns([3, 1])
     with chart_col1:
         st.markdown('<div class="panel-header">客流时序分析</div>', unsafe_allow_html=True)
-        fig = make_subplots(rows=2, cols=1, shared_xaxes=False, vertical_spacing=0.12, row_heights=[0.65, 0.35])
+        fig_main = go.Figure()
         if view_mode == "最近数据":
             cutoff = latest_date - timedelta(days=int(recent_months) * 30)
             plot_df = df[df["date"] >= cutoff].copy()
@@ -113,60 +113,66 @@ with st.container(border=True):
             colors = ["#3b82f6", "#06b6d4", "#8b5cf6", "#f59e0b", "#10b981"]
             for i, yr in enumerate(year_compare):
                 yr_df = plot_df[plot_df["year"] == yr]
-                fig.add_trace(go.Scatter(
+                fig_main.add_trace(go.Scatter(
                     x=yr_df["date"], y=yr_df["visitors"], mode="lines", name=f"{yr}年",
                     line=dict(color=colors[i % len(colors)], width=2),
                     hovertemplate=f"<b>%{{x}}</b><br>{yr}年: %{{y:,.0f}} 人次<extra></extra>"
-                ), row=1, col=1)
+                ))
         elif view_mode == "月度聚合":
-            fig.add_trace(go.Bar(
+            fig_main.add_trace(go.Bar(
                 x=plot_df["month_name"], y=plot_df["mean"], name="月均客流",
                 marker=dict(color="#3b82f6", line=dict(color="#1e3a5f", width=0.5)),
                 error_y=dict(type="data", array=plot_df["std"], color="#cbd5e1", thickness=1),
                 hovertemplate="<b>%{x}</b><br>月均: %{y:,.0f} 人次<extra></extra>"
-            ), row=1, col=1)
+            ))
         else:
             if smooth:
                 window = min(30, len(plot_df) // 10) if len(plot_df) > 10 else 7
                 plot_df["smoothed"] = plot_df["visitors"].rolling(window=window, center=True).mean()
-                fig.add_trace(go.Scatter(
+                fig_main.add_trace(go.Scatter(
                     x=plot_df["date"], y=plot_df["visitors"], mode="lines", name="实际客流",
                     line=dict(color="rgba(59,130,246,0.3)", width=1),
                     hovertemplate="<b>%{x}</b><br>客流: %{y:,.0f}<extra></extra>"
-                ), row=1, col=1)
-                fig.add_trace(go.Scatter(
+                ))
+                fig_main.add_trace(go.Scatter(
                     x=plot_df["date"], y=plot_df["smoothed"], mode="lines", name="移动平滑",
                     line=dict(color="#3b82f6", width=3),
                     hovertemplate="<b>%{x}</b><br>平滑: %{y:,.0f}<extra></extra>"
-                ), row=1, col=1)
+                ))
             else:
-                fig.add_trace(go.Scatter(
+                fig_main.add_trace(go.Scatter(
                     x=plot_df["date"], y=plot_df["visitors"], mode="lines", name="客流",
                     line=dict(color="#3b82f6", width=2), fill="tozeroy", fillcolor="rgba(59,130,246,0.08)",
                     hovertemplate="<b>%{x}</b><br>客流: %{y:,.0f} 人次<extra></extra>"
-                ), row=1, col=1)
+                ))
+
+        fig_main.update_layout(
+            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#cbd5e1", size=12),
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(color="#cbd5e1", size=11), bgcolor="rgba(0,0,0,0)"),
+            margin=dict(l=40, r=40, t=40, b=20), height=360, hovermode="x unified",
+            xaxis=dict(showgrid=False, zeroline=False, title="日期", title_font_color="#cbd5e1"),
+            yaxis=dict(showgrid=True, gridcolor="rgba(100,180,255,0.06)", zeroline=False, tickformat=",", title="人次", title_font_color="#cbd5e1"),
+        )
+        st.plotly_chart(fig_main, use_container_width=True, height=360, key="flow_main_chart", config={"displayModeBar": False})
 
         if view_mode != "月度聚合" and not plot_df.empty and "is_weekend" in plot_df.columns:
             weekend_avg = plot_df[plot_df["is_weekend"] == 1]["visitors"].mean()
             weekday_avg = plot_df[plot_df["is_weekend"] == 0]["visitors"].mean()
-            fig.add_trace(go.Bar(
+            fig_week = go.Figure()
+            fig_week.add_trace(go.Bar(
                 x=["工作日", "周末"], y=[weekday_avg, weekend_avg],
                 marker_color=["#3b82f6", "#06b6d4"],
                 text=[f"{weekday_avg:,.0f}", f"{weekend_avg:,.0f}"],
                 textposition="outside", textfont=dict(color="#cbd5e1", size=12),
                 hovertemplate="<b>%{x}</b><br>均值: %{y:,.0f} 人次<extra></extra>", showlegend=False
-            ), row=2, col=1)
-
-        fig.update_layout(
-            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#cbd5e1", size=12),
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(color="#cbd5e1", size=11), bgcolor="rgba(0,0,0,0)"),
-            margin=dict(l=40, r=40, t=40, b=20), height=540, hovermode="x unified",
-        )
-        fig.update_xaxes(showgrid=False, zeroline=False, row=1, col=1)
-        fig.update_yaxes(showgrid=True, gridcolor="rgba(100,180,255,0.06)", zeroline=False, tickformat=",", title="人次", row=1, col=1)
-        fig.update_xaxes(showgrid=False, row=2, col=1)
-        fig.update_yaxes(showgrid=True, gridcolor="rgba(100,180,255,0.06)", zeroline=False, tickformat=",", row=2, col=1)
-        st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+            ))
+            fig_week.update_layout(
+                paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#cbd5e1", size=12),
+                margin=dict(l=40, r=40, t=10, b=20), height=160, showlegend=False,
+                xaxis=dict(showgrid=False, zeroline=False, title="", title_font_color="#cbd5e1"),
+                yaxis=dict(showgrid=True, gridcolor="rgba(100,180,255,0.06)", zeroline=False, tickformat=",", title="人次", title_font_color="#cbd5e1"),
+            )
+            st.plotly_chart(fig_week, use_container_width=True, height=160, key="flow_weekend_chart", config={"displayModeBar": False})
 
     with chart_col2:
         st.markdown('<div class="panel-header">统计摘要</div>', unsafe_allow_html=True)

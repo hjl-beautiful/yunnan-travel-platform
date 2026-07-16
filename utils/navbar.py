@@ -71,7 +71,7 @@ def render_navbar(current_page: str = "首页"):
             border: 1px solid rgba(100, 180, 255, 0.12) !important;
             border-radius: 16px !important;
             padding: 4px 20px 20px 20px !important;
-            margin-bottom: 12px !important;
+            margin-bottom: 8px !important;
         }
         [data-testid="stVerticalBlockBorderWrapper"] > div {
             border: none !important;
@@ -123,7 +123,7 @@ def render_navbar(current_page: str = "首页"):
             border: 1px solid rgba(100, 180, 255, 0.1);
             border-radius: 12px;
             padding: 16px 24px;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -222,7 +222,7 @@ def render_navbar(current_page: str = "首页"):
             border: 1px solid rgba(16,185,129,0.15);
             border-radius: 12px;
             padding: 14px 20px;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
         .alert-banner.warning {
             background: linear-gradient(145deg, rgba(245,158,11,0.08) 0%, rgba(245,158,11,0.04) 100%);
@@ -276,8 +276,8 @@ def render_navbar(current_page: str = "首页"):
             border: 1px solid rgba(59,130,246,0.1);
             border-left: 3px solid #3b82f6;
             border-radius: 0 10px 10px 0;
-            padding: 12px 16px;
-            margin-bottom: 10px;
+            padding: 10px 14px;
+            margin-bottom: 8px;
         }
         .insight-card.warning {
             background: linear-gradient(145deg, rgba(245,158,11,0.05) 0%, rgba(8,18,34,0.3) 100%);
@@ -296,9 +296,9 @@ def render_navbar(current_page: str = "首页"):
             margin-bottom: 4px;
         }
         .insight-text {
-            font-size: 11px;
+            font-size: 12px;
             color: #cbd5e1;
-            line-height: 1.5;
+            line-height: 1.45;
         }
         
         /* 隐藏默认元素 */
@@ -384,7 +384,7 @@ def render_sidebar():
                 st.switch_page("pages/decision.py")
         with cols3[1]:
             if st.button("API文档", use_container_width=True, key="nav_api"):
-                st.markdown("<div style='font-size:10px; color:#cbd5e1;'>本地运行: python -m api.main</div>", unsafe_allow_html=True)
+                st.switch_page("pages/api_docs.py")
         
         st.markdown("---")
         
