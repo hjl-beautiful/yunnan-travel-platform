@@ -70,13 +70,3 @@ streamlit run app.py
 └── requirements.txt
 ```
 
-## 部署
-
-1. Fork 或 Push 到 GitHub 仓库
-2. 在 [Streamlit Cloud](https://share.streamlit.io) 连接仓库
-3. 选择 `main` 分支，入口文件 `app.py`
-4. 点击 Deploy
-
-## 面试话术
-
-> 国内 5A 景区中，只有九寨沟每天在官网公开精确游客数据。我基于 1,869 天真实数据构建了 XGBoost 时序预测模型，R² 达 0.97，误差率仅 5%。特征涵盖节假日、天气、历史滑动窗口等通用维度，方法论可无缝迁移至丽江古城、玉龙雪山等云南景区。模型已通过 SHAP 可解释性分析识别关键驱动因素，为运营决策提供数据支撑。
