@@ -52,7 +52,11 @@
 ├── data/
 │   ├── jiuzhaigou_daily.csv         # 原始清洗数据 (1,869行)
 │   ├── jiuzhaigou_features.csv      # 特征工程后数据 (40特征)
-│   └── clean_data.py                # 数据清洗 + 特征工程脚本
+│   ├── clean_data.py                # 数据清洗 + 特征工程脚本
+│   └── powerbi/                     # Power BI 星型模型数据
+│       ├── fact_visitors.csv        # 事实表（日度客流）
+│       ├── dim_date.csv             # 日期维度
+│       └── dim_holiday.csv          # 节假日维度（145 天）
 ├── ml/
 │   ├── train_model.py               # 模型训练 + GridSearchCV
 │   └── model/
@@ -63,6 +67,13 @@
 │       └── model_results.csv        # 多模型评估对比
 ├── utils/
 │   └── predictor.py                 # 预测器（加载模型 + 7日滚动预测）
+├── powerbi/                         # Power BI 建模脚本与文档
+│   ├── prepare_powerbi_data.py      # 由 jiuzhaigou_daily 生成星型模型 CSV
+│   ├── xlsx_to_csv.py               # 官方 xlsx → CSV 转换
+│   ├── rfm_analysis.sql             # RFM 分析 SQL（作品集证据）
+│   ├── holidays_2019_2025.csv       # 法定节假日标注
+│   ├── PowerBI执行清单_九寨沟客流.md  # 建模步骤清单
+│   └── PowerBI看板规划_九寨沟客流.md  # 看板设计规划
 └── requirements.txt
 ```
 
