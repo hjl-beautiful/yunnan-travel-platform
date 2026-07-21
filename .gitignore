@@ -22,3 +22,6 @@ Thumbs.db
 
 # Streamlit
 .streamlit/secrets.toml
+
+# 验证脚手架（含 23MB xlsx 与本地 sqlite，不入库）
+.validate/

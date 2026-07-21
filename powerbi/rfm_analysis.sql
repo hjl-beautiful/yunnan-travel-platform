@@ -8,29 +8,32 @@
 --       ⚠ 仅「日期差」函数因方言不同需替换，见各段「方言备注」
 -- ============================================================================
 
--- 0) 清洗：去掉退货单(C 开头)、负数量、无效客户、零单价
-WITH clean AS (
-    SELECT
-        CustomerID,
-        InvoiceNo,
-        StockCode,
-        InvoiceDate,
-        Quantity,
-        UnitPrice,
-        Quantity * UnitPrice AS amount
-    FROM online_retail
-    WHERE CustomerID IS NOT NULL
-      AND Quantity   > 0
-      AND UnitPrice  > 0
-      AND InvoiceNo NOT LIKE 'C%'   -- 退货/取消单以 C 开头
-),
+-- 0) 清洗视图 clean：去掉退货单(C 开头)、负数量、无效客户、零单价
+--    抽成 VIEW 而非 CTE，因为 CTE 作用域仅限「单条语句」；
+--    下面的分群 / 复购率 / LAG / RANK 各段都要复用 clean，故建为视图。
+DROP VIEW IF EXISTS clean;
+CREATE VIEW clean AS
+SELECT
+    CustomerID,
+    InvoiceNo,
+    StockCode,
+    InvoiceDate,
+    Quantity,
+    UnitPrice,
+    Country,
+    Quantity * UnitPrice AS amount
+FROM online_retail
+WHERE CustomerID IS NOT NULL
+  AND Quantity   > 0
+  AND UnitPrice  > 0
+  AND InvoiceNo NOT LIKE 'C%';   -- 退货/取消单以 C 开头
 
--- 1) 每位客户的 RFM 基础值
+-- 1) 每位客户的 RFM 基础值 + 打分 + 分群标签（RF 矩阵）
 --    方言备注：日期差
 --      SQLite     : julianday(a) - julianday(b)
 --      MySQL      : DATEDIFF(a, b)
 --      PostgreSQL : (a - b)
-rfm_raw AS (
+WITH rfm_raw AS (
     SELECT
         CustomerID,
         -- Recency：最近一次购买距「数据内最新日」的天数（比 now() 更稳，可复现）
@@ -43,7 +46,6 @@ rfm_raw AS (
     FROM clean
     GROUP BY CustomerID
 ),
-
 -- 2) RFM 打分（1–5 分）。Recency 越小越好 → 反向打分
 scored AS (
     SELECT
@@ -55,7 +57,6 @@ scored AS (
         NTILE(5) OVER (ORDER BY monetary)      AS M
     FROM rfm_raw
 ),
-
 -- 3) 组合分群标签（RF 矩阵，最常用、最直观）
 segmented AS (
     SELECT
@@ -68,7 +69,6 @@ segmented AS (
         END AS segment
     FROM scored
 )
-
 -- 输出：各分群人数与平均消费额
 SELECT
     segment,
@@ -143,4 +143,5 @@ ORDER BY Country, rk;
 -- 建议索引（大数据量时）：
 --   CREATE INDEX idx_cust ON online_retail(CustomerID);
 --   CREATE INDEX idx_inv  ON online_retail(InvoiceNo, InvoiceDate);
+-- 说明：clean 为复用视图，无需在每条语句里重复写清洗逻辑。
 -- ============================================================================
